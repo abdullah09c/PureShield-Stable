@@ -299,37 +299,54 @@ class BlockerService : AccessibilityService() {
     }
 
     private fun isFacebookReels(event: AccessibilityEvent): Boolean {
-        val root = rootInActiveWindow
-        val source = try { event.source } catch (_: Exception) { null }
+        val root = rootInActiveWindow ?: return false
 
-        // 1. Strict view ID matching
-        if (matchesAnyNodeTree(root, source, exactIds = BlockTargets.FACEBOOK_REELS_FULL_VIEW_IDS, shortIds = BlockTargets.FACEBOOK_REELS_VIEW_IDS, packageName = BlockTargets.PKG_FACEBOOK, event = event)) {
-            return true
+        // Detection based on live UI dump of Facebook Reels tab.
+        // Facebook obfuscates all resource-ids with "(name removed)", so we rely purely
+        // on content-desc and text values which are stable and unique to Reels.
+        //
+        // Key signals found in dump:
+        //   "Reels tab details"         — container for each Reel item in the RecyclerView
+        //   "reels, tab 2 of 6"         — bottom nav tab selected=true (user is on Reels tab)
+        //   "Create reel"               — Reels-specific action button
+        //   "Navigate to your Reels profile" — Reels-specific header button
+        //   "AudioOn" / "AudioOff"      — mute button specific to Reels player
+
+        val queue = ArrayDeque<AccessibilityNodeInfo>()
+        queue.add(root)
+        var inspected = 0
+        var hasReelsTabDetails = false
+        var hasReelsTabSelected = false
+        var hasReelsHeaderButton = false
+
+        while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
+            val node = queue.removeFirst()
+            val desc = node.contentDescription?.toString()?.lowercase() ?: ""
+            val text = node.text?.toString()?.lowercase() ?: ""
+
+            // Definitive: this content-desc only appears inside the Reels player feed
+            if (desc == "reels tab details") hasReelsTabDetails = true
+
+            // Nav tab selected = user is currently on Reels tab
+            if (desc.startsWith("reels") && desc.contains("tab") && node.isSelected) hasReelsTabSelected = true
+
+            // Reels-specific header/action buttons
+            if (desc == "create reel" || desc == "navigate to your reels profile" || desc == "audioon" || desc == "audiooff") hasReelsHeaderButton = true
+
+            // Quick exit: if any strong messaging signal found, abort immediately
+            if (desc.contains("type a message") || desc.contains("active now") || text.contains("type a message")) return false
+
+            for (i in 0 until node.childCount) {
+                node.getChild(i)?.let { queue.add(it) }
+            }
+            inspected++
         }
 
-        // 2. Anti-false positive: Ignore messaging
-        val textTexts = mutableSetOf<String>()
-        scanNodeTrees(root, source) { node ->
-            node.text?.toString()?.lowercase()?.let { textTexts.add(it) }
-            node.contentDescription?.toString()?.lowercase()?.let { textTexts.add(it) }
-            false to false
-        }
+        // Primary signal: Reels item container present = definitely in Reels feed
+        if (hasReelsTabDetails) return true
 
-        if (textTexts.any { it.contains("type a message") || it.contains("write a message") || it == "voice message" || it == "send" || it.contains("active now") }) {
-            return false
-        }
-
-        // 3. Fallback Heuristics
-        if (detectByRecursiveHeuristics(root, source, BlockTargets.PKG_FACEBOOK)) return true
-        
-        // 4. Semantic contextual hits
-        val semanticSourceClass = try { event.source?.className?.toString()?.lowercase() ?: "" } catch (_: Exception) { "" }
-        val looksScrollableContext = semanticSourceClass.contains("recycler") || semanticSourceClass.contains("viewpager") || semanticSourceClass.contains("pager")
-        
-        val reelKeywordsCount = textTexts.count { it == "reels" || it == "reel" || it == "short video" || it == "watch reels" || it == "reels and short videos" }
-        if (textTexts.contains("short video") || (reelKeywordsCount >= 1 && looksScrollableContext)) {
-            return true
-        }
+        // Secondary: tab is selected (on Reels tab) + at least one Reels UI button visible
+        if (hasReelsTabSelected && hasReelsHeaderButton) return true
 
         return false
     }
