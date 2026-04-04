@@ -32,6 +32,7 @@ class BlockerService : AccessibilityService() {
         private const val TAG = "BlockerService"
 
         private const val BLOCK_ACTION_COOLDOWN_MS = 900L
+        private const val FBLITE_CONFIRM_DELAY_MS = 500L  // Wait before confirming Reels block
         private const val MAX_NODE_SCAN = 1800
         private const val TOAST_SHORT_FEED_BLOCKED = "Reels/Shorts Blocked"
         private const val TOAST_TIKTOK_BLOCKED = "TikTok Blocked"
@@ -49,6 +50,12 @@ class BlockerService : AccessibilityService() {
     private var lastBlockTime = 0L
     private val mainHandler = Handler(Looper.getMainLooper())
     private var isForegroundShown = false
+
+    // Pending confirmation runnable for FB Lite Reels detection.
+    // We delay the block by FBLITE_CONFIRM_DELAY_MS and re-check to avoid false
+    // positives when fast-scrolling the news feed causes inline videos to briefly
+    // look like Reels (before video_player_controls renders in the accessibility tree).
+    private var fblitePendingBlockRunnable: Runnable? = null
 
     // ─── Lifecycle ──────────────────────────────────────────────────────────
 
@@ -116,6 +123,11 @@ class BlockerService : AccessibilityService() {
         val pkg = event.packageName?.toString() ?: return
         if (pkg == packageName || pkg == "com.android.systemui") return
 
+        // Cancel any pending FB Lite block if the user has navigated away from it
+        if (pkg != BlockTargets.PKG_FBLITE) {
+            cancelPendingFBLiteBlock()
+        }
+
         // Only process events from our target apps
         if (pkg !in BlockTargets.ALL_PACKAGES) return
 
@@ -137,6 +149,18 @@ class BlockerService : AccessibilityService() {
             return
         }
 
+        // FB Lite gets special treatment: schedule a delayed confirmation check
+        // to avoid false positives when fast-scrolling the news feed causes inline
+        // videos to momentarily look like Reels.
+        if (pkg == BlockTargets.PKG_FBLITE && Prefs.isFBLiteBlocked(this)) {
+            if (isFBLiteReels()) {
+                scheduleFBLiteBlockIfNotPending()
+            } else {
+                cancelPendingFBLiteBlock()
+            }
+            return
+        }
+
         val shouldBlock = when (pkg) {
             BlockTargets.PKG_YOUTUBE,
             BlockTargets.PKG_YOUTUBE_REVANCED -> {
@@ -144,7 +168,6 @@ class BlockerService : AccessibilityService() {
             }
 
             BlockTargets.PKG_FACEBOOK -> Prefs.isFacebookBlocked(this) && isFacebookReels(event)
-            BlockTargets.PKG_FBLITE -> Prefs.isFBLiteBlocked(this) && isFBLiteReels(event)
             BlockTargets.PKG_INSTAGRAM -> Prefs.isInstagramBlocked(this) && isInstagramReels(event)
             else -> false
         }
@@ -154,6 +177,27 @@ class BlockerService : AccessibilityService() {
             lastBlockTime = now
             blockWithGlobalAction(toastMessage = TOAST_SHORT_FEED_BLOCKED)
         }
+    }
+
+    private fun scheduleFBLiteBlockIfNotPending() {
+        if (fblitePendingBlockRunnable != null) return  // already scheduled
+        val runnable = Runnable {
+            fblitePendingBlockRunnable = null
+            // Re-confirm: still looks like Reels after the delay?
+            val root = rootInActiveWindow ?: return@Runnable
+            if (hasFBLiteFullScreenVideoInRecycler(root)) {
+                lastBlockedPkg = BlockTargets.PKG_FBLITE
+                lastBlockTime = System.currentTimeMillis()
+                blockWithGlobalAction(toastMessage = TOAST_SHORT_FEED_BLOCKED)
+            }
+        }
+        fblitePendingBlockRunnable = runnable
+        mainHandler.postDelayed(runnable, FBLITE_CONFIRM_DELAY_MS)
+    }
+
+    private fun cancelPendingFBLiteBlock() {
+        fblitePendingBlockRunnable?.let { mainHandler.removeCallbacks(it) }
+        fblitePendingBlockRunnable = null
     }
 
     // ─── Detection Logic ────────────────────────────────────────────────────
@@ -290,17 +334,8 @@ class BlockerService : AccessibilityService() {
         return false
     }
 
-    private fun isFBLiteReels(event: AccessibilityEvent): Boolean {
+    private fun isFBLiteReels(): Boolean {
         val root = rootInActiveWindow ?: return false
-
-        // Based on live UI dump: FB Lite Reels is detected by:
-        // - A scrollable RecyclerView present in the tree
-        // - com.facebook.lite:id/video_view present as a descendant
-        // - ZERO visible text content in the entire tree (Reels has no text labels exposed)
-        //
-        // IMPORTANT: Do NOT check just for video_view in any RecyclerView — regular feed
-        // videos also appear in RecyclerViews. The key differentiator is the absence of
-        // any text content, which is unique to the full-screen Reels player.
         return hasFBLiteFullScreenVideoInRecycler(root)
     }
 
