@@ -1,10 +1,12 @@
 package com.abdullah09c.pureshield.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.abdullah09c.pureshield.databinding.ActivityOverlayBinding
+import com.abdullah09c.pureshield.service.BlockerService
 import com.abdullah09c.pureshield.util.Prefs
 
 class OverlayActivity : AppCompatActivity() {
@@ -35,6 +37,10 @@ class OverlayActivity : AppCompatActivity() {
 
         // Go back button - close overlay and return to the current app flow
         binding.btnGoBack.setOnClickListener {
+            val serviceIntent = Intent(this, BlockerService::class.java).apply {
+                action = BlockerService.ACTION_DOUBLE_BACK
+            }
+            startService(serviceIntent)
             finish()
         }
 
@@ -43,7 +49,7 @@ class OverlayActivity : AppCompatActivity() {
 
         // Prevent back button from just closing overlay (user must use Go Back button)
         onBackPressedDispatcher.addCallback(this,
-            object : androidx.activity.OnBackPressedCallback(true) {
+            object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     binding.btnGoBack.performClick()
                 }

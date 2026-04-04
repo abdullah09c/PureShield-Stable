@@ -28,10 +28,10 @@ class BlockerService : AccessibilityService() {
         const val NOTIF_ID = 1001
         const val ACTION_STOP_FROM_NOTIFICATION = "com.abdullah09c.pureshield.action.STOP_FROM_NOTIFICATION"
         const val ACTION_SYNC_NOTIFICATION = "com.abdullah09c.pureshield.action.SYNC_NOTIFICATION"
+        const val ACTION_DOUBLE_BACK = "com.abdullah09c.pureshield.action.DOUBLE_BACK"
         private const val TAG = "BlockerService"
 
         private const val BLOCK_ACTION_COOLDOWN_MS = 900L
-        private const val OVERLAY_LAUNCH_COOLDOWN_MS = 1200L
         private const val MAX_NODE_SCAN = 1800
         private const val TOAST_SHORT_FEED_BLOCKED = "Reels/Shorts Blocked"
         private const val TOAST_TIKTOK_BLOCKED = "TikTok Blocked"
@@ -47,7 +47,6 @@ class BlockerService : AccessibilityService() {
 
     private var lastBlockedPkg = ""
     private var lastBlockTime = 0L
-    private var lastOverlayLaunchAt = 0L
     private val mainHandler = Handler(Looper.getMainLooper())
     private var isForegroundShown = false
 
@@ -82,6 +81,11 @@ class BlockerService : AccessibilityService() {
                 } else {
                     stopForegroundCompat()
                 }
+                return START_STICKY
+            }
+
+            ACTION_DOUBLE_BACK -> {
+                performDoubleBackAction()
                 return START_STICKY
             }
         }
@@ -409,11 +413,13 @@ class BlockerService : AccessibilityService() {
         }
     }
 
-    private fun showBlockOverlay() {
-        val now = System.currentTimeMillis()
-        if (now - lastOverlayLaunchAt < OVERLAY_LAUNCH_COOLDOWN_MS) return
-        lastOverlayLaunchAt = now
+    private fun performDoubleBackAction() {
+        mainHandler.post {
+            performGlobalAction(GLOBAL_ACTION_BACK)
+        }
+    }
 
+    private fun showBlockOverlay() {
         val overlayIntent = Intent(this, OverlayActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -425,18 +431,7 @@ class BlockerService : AccessibilityService() {
         try {
             startActivity(overlayIntent)
         } catch (e: Exception) {
-            Log.e(TAG, "Direct overlay launch failed, trying PendingIntent fallback", e)
-            try {
-                val pending = PendingIntent.getActivity(
-                    this,
-                    77,
-                    overlayIntent,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
-                pending.send()
-            } catch (fallbackError: Exception) {
-                Log.e(TAG, "PendingIntent overlay launch failed", fallbackError)
-            }
+            Log.e(TAG, "Failed to launch overlay", e)
         }
     }
 
