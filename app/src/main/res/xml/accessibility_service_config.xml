@@ -7,5 +7,5 @@
     android:canRetrieveWindowContent="true"
     android:description="@string/service_label"
     android:notificationTimeout="100"
-    android:packageNames="com.google.android.youtube,app.revanced.android.youtube,com.facebook.katana,com.facebook.lite,com.instagram.android,com.zhiliaoapp.musically,com.ss.android.ugc.trill,com.ss.android.ugc.aweme,com.zhiliaoapp.musically.go"
+    android:packageNames="com.google.android.youtube,app.revanced.android.youtube,com.facebook.katana,com.facebook.lite,com.instagram.android,com.zhiliaoapp.musically,com.ss.android.ugc.trill,com.ss.android.ugc.aweme,com.zhiliaoapp.musically.go,com.tiktok.lite.go,com.ss.android.ugc.trill.go"
     android:settingsActivity=".ui.BlockerSettingsActivity" />
