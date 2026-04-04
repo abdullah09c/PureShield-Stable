@@ -243,7 +243,7 @@ class BlockerService : AccessibilityService() {
                 (eventClass.contains("shorts") || eventDesc.contains("shorts")) && !eventDesc.contains("comments")
             }
 
-            BlockTargets.PKG_FACEBOOK, BlockTargets.PKG_FBLITE, BlockTargets.PKG_INSTAGRAM -> {
+            BlockTargets.PKG_INSTAGRAM -> {
                 eventBlob.contains("reel") ||
                     eventBlob.contains("reels") ||
                     eventBlob.contains("clips") ||
@@ -255,11 +255,115 @@ class BlockerService : AccessibilityService() {
     }
 
     private fun isFacebookReels(event: AccessibilityEvent): Boolean {
-        return isShortFeedOpen(BlockTargets.PKG_FACEBOOK, event)
+        val root = rootInActiveWindow
+        val source = try { event.source } catch (_: Exception) { null }
+
+        // 1. Strict view ID matching
+        if (matchesAnyNodeTree(root, source, exactIds = BlockTargets.FACEBOOK_REELS_FULL_VIEW_IDS, shortIds = BlockTargets.FACEBOOK_REELS_VIEW_IDS, packageName = BlockTargets.PKG_FACEBOOK, event = event)) {
+            return true
+        }
+
+        // 2. Anti-false positive: Ignore messaging
+        val textTexts = mutableSetOf<String>()
+        scanNodeTrees(root, source) { node ->
+            node.text?.toString()?.lowercase()?.let { textTexts.add(it) }
+            node.contentDescription?.toString()?.lowercase()?.let { textTexts.add(it) }
+            false to false
+        }
+
+        if (textTexts.any { it.contains("type a message") || it.contains("write a message") || it == "voice message" || it == "send" || it.contains("active now") }) {
+            return false
+        }
+
+        // 3. Fallback Heuristics
+        if (detectByRecursiveHeuristics(root, source, BlockTargets.PKG_FACEBOOK)) return true
+        
+        // 4. Semantic contextual hits
+        val semanticSourceClass = try { event.source?.className?.toString()?.lowercase() ?: "" } catch (_: Exception) { "" }
+        val looksScrollableContext = semanticSourceClass.contains("recycler") || semanticSourceClass.contains("viewpager") || semanticSourceClass.contains("pager")
+        
+        val reelKeywordsCount = textTexts.count { it == "reels" || it == "reel" || it == "short video" || it == "watch reels" || it == "reels and short videos" }
+        if (textTexts.contains("short video") || (reelKeywordsCount >= 1 && looksScrollableContext)) {
+            return true
+        }
+
+        return false
     }
 
     private fun isFBLiteReels(event: AccessibilityEvent): Boolean {
-        return isShortFeedOpen(BlockTargets.PKG_FBLITE, event)
+        val root = rootInActiveWindow ?: return false
+
+        // Based on live UI dump: FB Lite Reels is detected by:
+        // - A scrollable RecyclerView present in the tree
+        // - com.facebook.lite:id/video_view present as a descendant
+        // - ZERO visible text content in the entire tree (Reels has no text labels exposed)
+        //
+        // IMPORTANT: Do NOT check just for video_view in any RecyclerView — regular feed
+        // videos also appear in RecyclerViews. The key differentiator is the absence of
+        // any text content, which is unique to the full-screen Reels player.
+        return hasFBLiteFullScreenVideoInRecycler(root)
+    }
+
+    /**
+     * Checks if FB Lite has a video_view node that lives inside a scrollable RecyclerView.
+     * From the live dump: RecyclerView at bounds [0,151][720,1471] is scrollable=true,
+     * and com.facebook.lite:id/video_view is a descendant filling [0,194][720,1471].
+     */
+    private fun isFBLiteVideoInsideScrollableRecycler(root: AccessibilityNodeInfo): Boolean {
+        val queue = ArrayDeque<AccessibilityNodeInfo>()
+        queue.add(root)
+        var inspected = 0
+        while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
+            val node = queue.removeFirst()
+            val cls = node.className?.toString() ?: ""
+            if (cls.contains("RecyclerView") && node.isScrollable) {
+                if (containsAnyViewId(node, setOf("video_view"))) return true
+            }
+            for (i in 0 until node.childCount) {
+                node.getChild(i)?.let { queue.add(it) }
+            }
+            inspected++
+        }
+        return false
+    }
+
+    /**
+     * Structural heuristic based on live UI dumps:
+     *
+     * Reels player:    RecyclerView (scrollable) + video_view + NO video_player_controls/inline_progress_bar
+     * News feed video: RecyclerView (scrollable) + video_view + HAS video_player_controls + inline_progress_bar
+     * Stories feed:    RecyclerView (scrollable) + NO video_view at all
+     * Messaging:       Text content present
+     *
+     * The key: news feed inline videos expose video_player_controls and inline_progress_bar_layout.
+     * Reels full-screen player does NOT have these IDs — they are the perfect exclusion marker.
+     */
+    private fun hasFBLiteFullScreenVideoInRecycler(root: AccessibilityNodeInfo): Boolean {
+        val queue = ArrayDeque<AccessibilityNodeInfo>()
+        queue.add(root)
+        var inspected = 0
+        var hasScrollableRecycler = false
+        var hasVideoView = false
+        var hasNonReelsVideoId = false
+
+        while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
+            val node = queue.removeFirst()
+            val cls = node.className?.toString() ?: ""
+            val viewId = node.viewIdResourceName ?: ""
+
+            if (cls.contains("RecyclerView") && node.isScrollable) hasScrollableRecycler = true
+            if (viewId == "com.facebook.lite:id/video_view") hasVideoView = true
+            // If any inline-player-specific IDs are present, this is a feed video, not Reels
+            if (viewId in BlockTargets.FBLITE_NON_REELS_VIDEO_IDS) hasNonReelsVideoId = true
+
+            for (i in 0 until node.childCount) {
+                node.getChild(i)?.let { queue.add(it) }
+            }
+            inspected++
+        }
+
+        // Must have video_view in a scrollable RecyclerView, but NOT have inline player controls
+        return hasScrollableRecycler && hasVideoView && !hasNonReelsVideoId
     }
 
     private fun isInstagramReels(event: AccessibilityEvent): Boolean {

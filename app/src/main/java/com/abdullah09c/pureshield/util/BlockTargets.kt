@@ -79,17 +79,29 @@ object BlockTargets {
         "clips_tab"
     )
 
-    // Facebook Lite Reels detection (strict player/container IDs)
+    // Facebook Lite Reels detection
+    // NOTE: FB Lite heavily obfuscates its view IDs. During an active Reel, the
+    // ONLY named resource-id visible is video_view inside a scrollable RecyclerView.
+    // Regular news feed videos also use video_view, but expose additional IDs:
+    //   - video_player_controls
+    //   - inline_progress_bar_layout
+    //   - video_play_icon
+    // These are ABSENT in the Reels full-screen player, making them reliable exclusion markers.
     val FBLITE_REELS_FULL_VIEW_IDS = setOf(
-        "com.facebook.lite:id/reels_video_container",
-        "com.facebook.lite:id/short_video_container"
+        "com.facebook.lite:id/video_view"
     )
 
     val FBLITE_REELS_VIEW_IDS = setOf(
-        "reels_video_container",
-        "short_video_container",
-        "reels_player_view",
-        "reels_view_pager"
+        "video_view"
+    )
+
+    // These IDs appear in FB Lite NEWS FEED inline videos but NOT in Reels.
+    // If any of these are present, we are NOT in Reels.
+    val FBLITE_NON_REELS_VIDEO_IDS = setOf(
+        "com.facebook.lite:id/video_player_controls",
+        "com.facebook.lite:id/inline_progress_bar_layout",
+        "com.facebook.lite:id/video_play_icon",
+        "com.facebook.lite:id/inline_progress_bar"
     )
 
     // Instagram Reels detection (strict viewer roots, no tab-based matching)
