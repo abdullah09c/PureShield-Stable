@@ -58,7 +58,7 @@ A minimal, lightweight Android app that blocks Reels & Shorts on social media an
 ## Developer
 
 **Abdullah**  
-Shahjalal University of Science and Technology (SUST)  
+Noakhali Science and Technology University (NSTU)  
 GitHub: [github.com/abdullah09c](https://github.com/abdullah09c)
 
 ---

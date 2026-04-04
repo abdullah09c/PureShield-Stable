@@ -136,20 +136,20 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Abdullah"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp"
+                        android:text="Abdullah Al Fuwad"
                         android:textColor="@color/text_primary"
-                        android:layout_marginBottom="4dp" />
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Shahjalal University of Science and Technology"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="16dp"
+                        android:text="Noakhali Science and Technology University"
                         android:textAlignment="center"
-                        android:layout_marginBottom="16dp" />
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
 
                     <Button
                         android:id="@+id/btnGithub"

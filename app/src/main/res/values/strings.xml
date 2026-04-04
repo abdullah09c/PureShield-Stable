@@ -68,7 +68,7 @@
 
     <!-- About -->
     <string name="about_version">Version 1.0.0</string>
-    <string name="about_developer">Abdullah</string>
+    <string name="about_developer">Abdullah Al Fuwad</string>
     <string name="about_github">github.com/abdullah09c</string>
     <string name="about_github_url">https://github.com/abdullah09c</string>
     <string name="about_description">PureShield was built with the intention of helping Muslims and everyone build healthier screen habits — blocking short-form content and filtering harmful web content, all without collecting any data.</string>
@@ -85,7 +85,7 @@
     <string name="feedback_feature">💡 Suggest a Feature</string>
     <string name="feedback_email">📧 Email Developer</string>
     <string name="feedback_github_issues">https://github.com/abdullah09c/pureshield/issues</string>
-    <string name="feedback_email_address">mailto:abdullah09c@gmail.com</string>
+    <string name="feedback_email_address">mailto:abdullah0117@student.nstu.edu.bd</string>
 
     <!-- General -->
     <string name="status_active">Active</string>
