@@ -123,6 +123,20 @@ class BlockerService : AccessibilityService() {
         val now = System.currentTimeMillis()
         if (pkg == lastBlockedPkg && now - lastBlockTime < BLOCK_ACTION_COOLDOWN_MS) return
 
+        val isTikTokFamily = pkg == BlockTargets.PKG_TIKTOK ||
+            pkg == BlockTargets.PKG_TIKTOK_ALT ||
+            pkg == BlockTargets.PKG_TIKTOK_AWEME ||
+            pkg == BlockTargets.PKG_TIKTOK_LITE ||
+            pkg == BlockTargets.PKG_TIKTOK_LITE_LEGACY ||
+            pkg == BlockTargets.PKG_TIKTOK_LITE_ALT
+
+        if (isTikTokFamily && Prefs.isTikTokBlocked(this)) {
+            lastBlockedPkg = pkg
+            lastBlockTime = now
+            blockFullAppWithGlobalAction(toastMessage = TOAST_TIKTOK_BLOCKED)
+            return
+        }
+
         val shouldBlock = when (pkg) {
             BlockTargets.PKG_YOUTUBE,
             BlockTargets.PKG_YOUTUBE_REVANCED -> {
@@ -132,25 +146,13 @@ class BlockerService : AccessibilityService() {
             BlockTargets.PKG_FACEBOOK -> Prefs.isFacebookBlocked(this) && isFacebookReels(event)
             BlockTargets.PKG_FBLITE -> Prefs.isFBLiteBlocked(this) && isFBLiteReels(event)
             BlockTargets.PKG_INSTAGRAM -> Prefs.isInstagramBlocked(this) && isInstagramReels(event)
-            BlockTargets.PKG_TIKTOK,
-            BlockTargets.PKG_TIKTOK_ALT,
-            BlockTargets.PKG_TIKTOK_AWEME,
-            BlockTargets.PKG_TIKTOK_LITE -> Prefs.isTikTokBlocked(this)
             else -> false
         }
 
         if (shouldBlock) {
             lastBlockedPkg = pkg
             lastBlockTime = now
-            if (pkg == BlockTargets.PKG_TIKTOK ||
-                pkg == BlockTargets.PKG_TIKTOK_ALT ||
-                pkg == BlockTargets.PKG_TIKTOK_AWEME ||
-                pkg == BlockTargets.PKG_TIKTOK_LITE
-            ) {
-                blockWithGlobalAction(toastMessage = TOAST_TIKTOK_BLOCKED)
-            } else {
-                blockWithGlobalAction(toastMessage = TOAST_SHORT_FEED_BLOCKED)
-            }
+            blockWithGlobalAction(toastMessage = TOAST_SHORT_FEED_BLOCKED)
         }
     }
 
@@ -191,7 +193,14 @@ class BlockerService : AccessibilityService() {
             BlockTargets.PKG_INSTAGRAM -> BlockTargets.INSTAGRAM_REELS_FULL_VIEW_IDS
             else -> emptySet()
         }
-        if (matchesAnyNodeTree(root, source, exactIds = exactIds, shortIds = emptySet(), packageName = packageName, event = event)) {
+        val shortIds = when (packageName) {
+            BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> BlockTargets.YOUTUBE_SHORTS_VIEW_IDS
+            BlockTargets.PKG_FACEBOOK -> BlockTargets.FACEBOOK_REELS_VIEW_IDS
+            BlockTargets.PKG_FBLITE -> BlockTargets.FBLITE_REELS_VIEW_IDS
+            BlockTargets.PKG_INSTAGRAM -> BlockTargets.INSTAGRAM_REELS_VIEW_IDS
+            else -> emptySet()
+        }
+        if (matchesAnyNodeTree(root, source, exactIds = exactIds, shortIds = shortIds, packageName = packageName, event = event)) {
             // YouTube watch pages can show panels; avoid false positive there.
             if (packageName == BlockTargets.PKG_YOUTUBE || packageName == BlockTargets.PKG_YOUTUBE_REVANCED) {
                 val hasEngagementPanel = matchesAnyNodeTree(root, source, exactIds = BlockTargets.YOUTUBE_ENGAGEMENT_PANEL_FULL_VIEW_IDS, shortIds = emptySet(), packageName = packageName, event = event)
@@ -205,16 +214,40 @@ class BlockerService : AccessibilityService() {
         val fallback = detectByRecursiveHeuristics(root, source, packageName)
         if (fallback) return true
 
+        if (packageName == BlockTargets.PKG_FACEBOOK || packageName == BlockTargets.PKG_FBLITE) {
+            val semanticHits = collectSemanticKeywordHits(
+                root,
+                source,
+                setOf("reel", "reels", "short video", "watch reels", "reels and short videos")
+            )
+            val semanticSourceClass = try { event.source?.className?.toString()?.lowercase() ?: "" } catch (_: Exception) { "" }
+            val looksScrollableContext = semanticSourceClass.contains("recycler") || semanticSourceClass.contains("viewpager") || semanticSourceClass.contains("pager")
+            if ("short video" in semanticHits || (semanticHits.size >= 2 && looksScrollableContext)) {
+                return true
+            }
+        }
+
         // Event-level fallback when node tree is sparse.
         val eventClass = event.className?.toString()?.lowercase() ?: ""
         val eventDesc = event.contentDescription?.toString()?.lowercase() ?: ""
+        val sourceClass = try { event.source?.className?.toString()?.lowercase() ?: "" } catch (_: Exception) { "" }
+        val eventTextBlob = buildString {
+            event.text?.forEach { t ->
+                append(t?.toString()?.lowercase())
+                append('|')
+            }
+        }
+        val eventBlob = "$eventClass|$eventDesc|$sourceClass|$eventTextBlob"
         return when (packageName) {
             BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> {
                 (eventClass.contains("shorts") || eventDesc.contains("shorts")) && !eventDesc.contains("comments")
             }
 
             BlockTargets.PKG_FACEBOOK, BlockTargets.PKG_FBLITE, BlockTargets.PKG_INSTAGRAM -> {
-                eventClass.contains("reel") || eventDesc.contains("reel") || eventDesc.contains("clips")
+                eventBlob.contains("reel") ||
+                    eventBlob.contains("reels") ||
+                    eventBlob.contains("clips") ||
+                    eventBlob.contains("short video")
             }
 
             else -> false
@@ -226,22 +259,7 @@ class BlockerService : AccessibilityService() {
     }
 
     private fun isFBLiteReels(event: AccessibilityEvent): Boolean {
-        val root = rootInActiveWindow ?: return false
-        val source = try { event.source } catch (_: Exception) { null }
-
-        if (matchesAnyNodeTree(root, source, BlockTargets.FBLITE_REELS_FULL_VIEW_IDS, BlockTargets.FBLITE_REELS_VIEW_IDS, BlockTargets.PKG_FBLITE, event)) return true
-
-        val hasShortId = matchesAnyNodeTree(root, source, emptySet(), BlockTargets.FBLITE_REELS_VIEW_IDS, BlockTargets.PKG_FBLITE, event)
-        if (!hasShortId) return false
-
-        val sourceClass = event.source?.className?.toString() ?: ""
-        val desc = event.contentDescription?.toString() ?: ""
-        val looksLikeReelContext =
-            sourceClass.contains("RecyclerView") ||
-            sourceClass.contains("ViewPager") ||
-            desc.contains("reel", ignoreCase = true)
-
-        return looksLikeReelContext
+        return isShortFeedOpen(BlockTargets.PKG_FBLITE, event)
     }
 
     private fun isInstagramReels(event: AccessibilityEvent): Boolean {
@@ -354,6 +372,43 @@ class BlockerService : AccessibilityService() {
         return scan(source) || scan(root)
     }
 
+    private fun collectSemanticKeywordHits(
+        root: AccessibilityNodeInfo?,
+        source: AccessibilityNodeInfo?,
+        keywords: Set<String>
+    ): Set<String> {
+        val hits = mutableSetOf<String>()
+
+        fun scan(start: AccessibilityNodeInfo?) {
+            if (start == null || hits.size == keywords.size) return
+            val queue = ArrayDeque<AccessibilityNodeInfo>()
+            queue.add(start)
+            var inspected = 0
+
+            while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN && hits.size < keywords.size) {
+                val node = queue.removeFirst()
+                val blob = buildString {
+                    append(node.text?.toString()?.lowercase())
+                    append('|')
+                    append(node.contentDescription?.toString()?.lowercase())
+                }
+
+                keywords.forEach { keyword ->
+                    if (blob.contains(keyword)) hits.add(keyword)
+                }
+
+                for (i in 0 until node.childCount) {
+                    node.getChild(i)?.let { queue.add(it) }
+                }
+                inspected++
+            }
+        }
+
+        scan(source)
+        scan(root)
+        return hits
+    }
+
     /**
      * BFS traversal to find if any node has one of the target view IDs.
      * Stops early as soon as a match is found (efficient).
@@ -409,6 +464,14 @@ class BlockerService : AccessibilityService() {
     private fun blockWithGlobalAction(toastMessage: String) {
         mainHandler.post {
             Toast.makeText(applicationContext, toastMessage, Toast.LENGTH_LONG).show()
+            showBlockOverlay()
+        }
+    }
+
+    private fun blockFullAppWithGlobalAction(toastMessage: String) {
+        mainHandler.post {
+            Toast.makeText(applicationContext, toastMessage, Toast.LENGTH_LONG).show()
+            performGlobalAction(GLOBAL_ACTION_HOME)
             showBlockOverlay()
         }
     }

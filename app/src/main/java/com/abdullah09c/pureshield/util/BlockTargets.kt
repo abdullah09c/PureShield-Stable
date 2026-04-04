@@ -23,7 +23,9 @@ object BlockTargets {
     const val PKG_TIKTOK = "com.zhiliaoapp.musically"
     const val PKG_TIKTOK_ALT = "com.ss.android.ugc.trill" // TikTok in some regions
     const val PKG_TIKTOK_AWEME = "com.ss.android.ugc.aweme" // TikTok China variant
-    const val PKG_TIKTOK_LITE = "com.zhiliaoapp.musically.go" // TikTok Lite
+    const val PKG_TIKTOK_LITE = "com.tiktok.lite.go" // TikTok Lite
+    const val PKG_TIKTOK_LITE_LEGACY = "com.zhiliaoapp.musically.go" // Older TikTok Lite package
+    const val PKG_TIKTOK_LITE_ALT = "com.ss.android.ugc.trill.go" // TikTok Lite variant in some regions
 
     // YouTube Shorts detection
     // These class names appear when user is inside the Shorts player
@@ -66,6 +68,17 @@ object BlockTargets {
         "com.facebook.katana:id/video_timeline_story_item"
     )
 
+    val FACEBOOK_REELS_VIEW_IDS = setOf(
+        "reels_video_container",
+        "reels_player_view",
+        "video_timeline_story_item",
+        "short_video_container",
+        "short_video_player",
+        "reels_view_pager",
+        "reels_tab",
+        "clips_tab"
+    )
+
     // Facebook Lite Reels detection (strict player/container IDs)
     val FBLITE_REELS_FULL_VIEW_IDS = setOf(
         "com.facebook.lite:id/reels_video_container",
@@ -86,6 +99,16 @@ object BlockTargets {
         "com.instagram.android:id/reel_viewer_root"
     )
 
+    val INSTAGRAM_REELS_VIEW_IDS = setOf(
+        "root_clips_layout",
+        "clips_viewer",
+        "reel_viewer_root",
+        "clips_tab",
+        "reels_tab",
+        "reel_feed_timeline",
+        "clips_media_viewer"
+    )
+
     // All packages we monitor (used by accessibility service filter)
     val ALL_PACKAGES = setOf(
         PKG_YOUTUBE,
@@ -96,6 +119,8 @@ object BlockTargets {
         PKG_TIKTOK,
         PKG_TIKTOK_ALT,
         PKG_TIKTOK_AWEME,
-        PKG_TIKTOK_LITE
+        PKG_TIKTOK_LITE,
+        PKG_TIKTOK_LITE_LEGACY,
+        PKG_TIKTOK_LITE_ALT
     )
 }
