@@ -60,11 +60,40 @@ object Prefs {
     fun setStartOnBoot(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_START_ON_BOOT, v).apply()
 }
 
-enum class DnsPreset(val displayName: String, val address: String) {
-    NONE("None (Disabled)", ""),
-    CLEANBROWSING_FAMILY("CleanBrowsing Family", "family-filter-dns.cleanbrowsing.org"),
-    CLEANBROWSING_ADULT("CleanBrowsing Adult", "adult-filter-dns.cleanbrowsing.org"),
-    CLOUDFLARE_FAMILY("Cloudflare Family", "family.cloudflare-dns.com"),
-    CLOUDFLARE_DEFAULT("Cloudflare Default", "1dot1dot1dot1.cloudflare-dns.com"),
-    GOOGLE("Google Safe DNS", "dns.google")
+enum class DnsPreset(val displayName: String, val address: String, val features: List<String>) {
+    NONE("None (Disabled)", "", listOf()),
+    
+    CLEANBROWSING_FAMILY("CleanBrowsing Family", "family-filter-dns.cleanbrowsing.org", listOf(
+        "Blocks Adult Content",
+        "Blocks Proxies & VPNs",
+        "Blocks Mixed Content (e.g. Reddit)",
+        "Blocks Malware & Phishing",
+        "Forces SafeSearch"
+    )),
+    
+    CLEANBROWSING_ADULT("CleanBrowsing Adult", "adult-filter-dns.cleanbrowsing.org", listOf(
+        "Blocks Adult Content",
+        "Blocks Malware & Phishing",
+        "Forces SafeSearch",
+        "Allows Proxies & VPNs",
+        "Allows Mixed Content (e.g. Reddit)"
+    )),
+
+    CLEANBROWSING_SECURITY("CleanBrowsing Security", "security-filter-dns.cleanbrowsing.org", listOf(
+        "Blocks Malware, Phishing & Spam",
+        "Updated Hourly",
+        "Allows Adult Content"
+    )),
+    
+    CLOUDFLARE_FAMILY("Cloudflare Family", "family.cloudflare-dns.com", listOf(
+        "Blocks Adult Content",
+        "Blocks Malware",
+        "High Speed DNS"
+    )),
+
+    CLOUDFLARE_SECURITY("Cloudflare Security", "security.cloudflare-dns.com", listOf(
+        "Blocks Malware",
+        "High Speed DNS",
+        "Allows Adult Content"
+    ))
 }

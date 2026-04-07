@@ -64,7 +64,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateDnsCard() {
-        val preset = DnsPreset.valueOf(Prefs.getDnsPreset(this))
+        val preset = try {
+            DnsPreset.valueOf(Prefs.getDnsPreset(this))
+        } catch (e: IllegalArgumentException) {
+            Prefs.setDnsPreset(this, DnsPreset.NONE.name)
+            DnsPreset.NONE
+        }
+        
         binding.tvDnsStatus.text = if (preset == DnsPreset.NONE)
             getString(R.string.status_inactive)
         else
@@ -190,28 +196,53 @@ class MainActivity : AppCompatActivity() {
                 updateDnsCard()
                 dialog.dismiss()
                 if (selected != DnsPreset.NONE) {
-                    // Show the address to copy, then open settings
-                    MaterialAlertDialogBuilder(this)
-                        .setTitle("Set Private DNS")
-                        .setMessage(
-                            "In the next screen:\n\n" +
-                            "1. Select \"Private DNS provider hostname\"\n" +
-                            "2. Enter this address:\n\n" +
-                            "➜  ${selected.address}\n\n" +
-                            "3. Tap Save"
-                        )
-                        .setPositiveButton("Open DNS Settings") { _, _ ->
-                            DnsHelper.openPrivateDnsSettings(this)
+                    val dialogView = layoutInflater.inflate(R.layout.dialog_dns_info, null)
+                    
+                    val tvDnsTitle = dialogView.findViewById<android.widget.TextView>(R.id.tvDnsTitle)
+                    val tvDnsAddress = dialogView.findViewById<android.widget.TextView>(R.id.tvDnsAddress)
+                    val dnsFeaturesContainer = dialogView.findViewById<android.widget.LinearLayout>(R.id.dnsFeaturesContainer)
+                    val btnCopy = dialogView.findViewById<android.widget.Button>(R.id.btnCopy)
+                    val btnOpenSettings = dialogView.findViewById<android.widget.Button>(R.id.btnOpenSettings)
+
+                    tvDnsTitle.text = selected.displayName
+                    tvDnsAddress.text = selected.address
+
+                    selected.features.forEach { feature ->
+                        val featureView = layoutInflater.inflate(R.layout.item_dns_feature, dnsFeaturesContainer, false)
+                        val tvFeatureIcon = featureView.findViewById<android.widget.TextView>(R.id.tvFeatureIcon)
+                        val tvFeatureText = featureView.findViewById<android.widget.TextView>(R.id.tvFeatureText)
+                        
+                        if (feature.startsWith("Allows")) {
+                            tvFeatureIcon.text = "❌"
+                            tvFeatureIcon.setTextColor(getColor(R.color.danger))
+                        } else if (feature.startsWith("Blocks")) {
+                            tvFeatureIcon.text = "🛡️"
+                        } else if (feature.startsWith("High Speed")) {
+                            tvFeatureIcon.text = "⚡"
+                        } else if (feature.startsWith("Updated")) {
+                            tvFeatureIcon.text = "🔄"
+                        } else if (feature.startsWith("Forces")) {
+                            tvFeatureIcon.text = "🔒"
                         }
-                        .setNeutralButton("Copy Address") { _, _ ->
-                            val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                            clipboard.setPrimaryClip(
-                                android.content.ClipData.newPlainText("DNS", selected.address)
-                            )
-                            Toast.makeText(this, "Address copied!", Toast.LENGTH_SHORT).show()
-                            DnsHelper.openPrivateDnsSettings(this)
-                        }
+                        
+                        tvFeatureText.text = feature
+                        dnsFeaturesContainer.addView(featureView)
+                    }
+
+                    val infoDialog = MaterialAlertDialogBuilder(this)
+                        .setView(dialogView)
                         .show()
+
+                    btnCopy.setOnClickListener {
+                        val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("DNS", selected.address))
+                        Toast.makeText(this, "Address copied!", Toast.LENGTH_SHORT).show()
+                    }
+
+                    btnOpenSettings.setOnClickListener {
+                        infoDialog.dismiss()
+                        DnsHelper.openPrivateDnsSettings(this)
+                    }
                 }
             }
             .setNegativeButton(getString(R.string.cancel), null)

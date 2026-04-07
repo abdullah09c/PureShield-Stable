@@ -11,3 +11,6 @@ local.properties
 app/build/
 app/dump_formatted.xml
 app/window_dump.xml
+crash.log
+*.log
+*.txt

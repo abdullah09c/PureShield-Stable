@@ -8,7 +8,7 @@ A minimal, lightweight Android app that blocks Reels & Shorts on social media an
 
 ## Features
 
-- **Reels & Shorts Blocker** — YouTube Shorts, Facebook Reels, FB Lite, Instagram Reels, TikTok
+- **Reels & Shorts Blocker** — YouTube Shorts, Facebook Reels, FB Lite, Instagram, TikTok
 - **Safe Internet (Private DNS)** — CleanBrowsing Family/Adult, Cloudflare Family, Google Safe
 - **Uninstall Protection** — PIN-protected Device Admin to prevent impulsive removal
 - **Start on Boot** — Automatically activates when phone turns on

@@ -34,7 +34,7 @@
     <string name="label_youtube_shorts">YouTube Shorts</string>
     <string name="label_facebook_reels">Facebook Reels</string>
     <string name="label_fblite_reels">Facebook Lite Reels</string>
-    <string name="label_instagram_reels">Instagram Reels</string>
+    <string name="label_instagram_reels">Instagram (Full App)</string>
     <string name="label_tiktok">TikTok (Full App)</string>
     <string name="label_block_message">Custom Block Message</string>
     <string name="hint_block_message">Enter your motivational reminder…</string>
