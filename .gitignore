@@ -1,7 +1,7 @@
 *.iml
 .gradle
 /local.properties
-/.idea
+.idea/
 .DS_Store
 /build
 /captures
@@ -9,3 +9,5 @@
 .cxx
 local.properties
 app/build/
+app/dump_formatted.xml
+app/window_dump.xml

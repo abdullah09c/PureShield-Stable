@@ -9,7 +9,7 @@ package com.abdullah09c.pureshield.util
  * - YouTube: detect ShortsActivity class name OR "reel_watch_player" view ID
  * - Facebook: detect "reels_video_container" OR "video_timeline" OR reels tab selected
  * - FB Lite: detect reels-specific node IDs in com.facebook.lite package
- * - Instagram: detect "Reels" tab being active OR reels player view IDs
+ * - Instagram: block entire app (full-app block approach)
  * - TikTok: block entire app (full-app block approach)
  */
 object BlockTargets {
@@ -104,22 +104,7 @@ object BlockTargets {
         "com.facebook.lite:id/inline_progress_bar"
     )
 
-    // Instagram Reels detection (strict viewer roots, no tab-based matching)
-    val INSTAGRAM_REELS_FULL_VIEW_IDS = setOf(
-        "com.instagram.android:id/root_clips_layout",
-        "com.instagram.android:id/clips_viewer",
-        "com.instagram.android:id/reel_viewer_root"
-    )
-
-    val INSTAGRAM_REELS_VIEW_IDS = setOf(
-        "root_clips_layout",
-        "clips_viewer",
-        "reel_viewer_root",
-        "clips_tab",
-        "reels_tab",
-        "reel_feed_timeline",
-        "clips_media_viewer"
-    )
+    // Instagram: block entire app (full-app block approach)
 
     // All packages we monitor (used by accessibility service filter)
     val ALL_PACKAGES = setOf(

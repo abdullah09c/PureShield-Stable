@@ -149,6 +149,13 @@ class BlockerService : AccessibilityService() {
             return
         }
 
+        if (pkg == BlockTargets.PKG_INSTAGRAM && Prefs.isInstagramBlocked(this)) {
+            lastBlockedPkg = pkg
+            lastBlockTime = now
+            blockFullAppWithGlobalAction(toastMessage = "Instagram Blocked")
+            return
+        }
+
         // FB Lite gets special treatment: schedule a delayed confirmation check
         // to avoid false positives when fast-scrolling the news feed causes inline
         // videos to momentarily look like Reels.
@@ -168,7 +175,6 @@ class BlockerService : AccessibilityService() {
             }
 
             BlockTargets.PKG_FACEBOOK -> Prefs.isFacebookBlocked(this) && isFacebookReels(event)
-            BlockTargets.PKG_INSTAGRAM -> Prefs.isInstagramBlocked(this) && isInstagramReels(event)
             else -> false
         }
 
@@ -234,14 +240,12 @@ class BlockerService : AccessibilityService() {
             BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> BlockTargets.YOUTUBE_SHORTS_FULL_VIEW_IDS
             BlockTargets.PKG_FACEBOOK -> BlockTargets.FACEBOOK_REELS_FULL_VIEW_IDS
             BlockTargets.PKG_FBLITE -> BlockTargets.FBLITE_REELS_FULL_VIEW_IDS
-            BlockTargets.PKG_INSTAGRAM -> BlockTargets.INSTAGRAM_REELS_FULL_VIEW_IDS
             else -> emptySet()
         }
         val shortIds = when (packageName) {
             BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> BlockTargets.YOUTUBE_SHORTS_VIEW_IDS
             BlockTargets.PKG_FACEBOOK -> BlockTargets.FACEBOOK_REELS_VIEW_IDS
             BlockTargets.PKG_FBLITE -> BlockTargets.FBLITE_REELS_VIEW_IDS
-            BlockTargets.PKG_INSTAGRAM -> BlockTargets.INSTAGRAM_REELS_VIEW_IDS
             else -> emptySet()
         }
         if (matchesAnyNodeTree(root, source, exactIds = exactIds, shortIds = shortIds, packageName = packageName, event = event)) {
@@ -285,13 +289,6 @@ class BlockerService : AccessibilityService() {
         return when (packageName) {
             BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> {
                 (eventClass.contains("shorts") || eventDesc.contains("shorts")) && !eventDesc.contains("comments")
-            }
-
-            BlockTargets.PKG_INSTAGRAM -> {
-                eventBlob.contains("reel") ||
-                    eventBlob.contains("reels") ||
-                    eventBlob.contains("clips") ||
-                    eventBlob.contains("short video")
             }
 
             else -> false
@@ -418,10 +415,6 @@ class BlockerService : AccessibilityService() {
         return hasScrollableRecycler && hasVideoView && !hasNonReelsVideoId
     }
 
-    private fun isInstagramReels(event: AccessibilityEvent): Boolean {
-        return isShortFeedOpen(BlockTargets.PKG_INSTAGRAM, event)
-    }
-
     // ─── Node Traversal Helpers ─────────────────────────────────────────────
 
     private fun detectByRecursiveHeuristics(
@@ -438,11 +431,6 @@ class BlockerService : AccessibilityService() {
             BlockTargets.PKG_FACEBOOK, BlockTargets.PKG_FBLITE -> Pair(
                 setOf("reel", "short_video", "video_timeline"),
                 setOf("reels", "short video")
-            )
-
-            BlockTargets.PKG_INSTAGRAM -> Pair(
-                setOf("clips", "reel", "viewer"),
-                setOf("reels", "clips")
             )
 
             else -> Pair(emptySet(), emptySet())
