@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="Theme.PureShield" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
@@ -14,7 +14,6 @@
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="android:statusBarColor">@color/primary_variant</item>
         <item name="android:navigationBarColor">@color/background</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
@@ -76,8 +75,8 @@
     <!-- Toolbar -->
     <style name="PureShield.Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="android:background">@color/primary_variant</item>
-        <item name="titleTextColor">#FFFFFF</item>
-        <item name="subtitleTextColor">#E6FFFFFF</item>
+        <item name="titleTextColor">@color/text_primary</item>
+        <item name="subtitleTextColor">@color/text_secondary</item>
     </style>
 
     <!-- Numpad button style -->

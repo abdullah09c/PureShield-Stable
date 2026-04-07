@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Islamic Green Palette -->
+    <color name="primary">#145A3A</color>
+    <color name="primary_variant">#0B3F29</color>
+    <color name="secondary">#1E7A4E</color>
+    <color name="secondary_variant">#16613E</color>
+
+    <!-- Emerald Accent (retains existing token names for compatibility) -->
+    <color name="gold">#7CCB9B</color>
+    <color name="gold_light">#A8E0BF</color>
+    <color name="gold_dark">#4FA675</color>
+
+    <!-- Backgrounds -->
+    <color name="background">#081B12</color>
+    <color name="surface">#11271D</color>
+    <color name="surface_variant">#183328</color>
+    <color name="card_stroke">#23533D</color>
+
+    <!-- Text -->
+    <color name="text_primary">#F3F8F4</color>
+    <color name="text_secondary">#B2C8BA</color>
+    <color name="text_hint">#78927F</color>
+
+    <!-- Header Text -->
+    <color name="header_title">@color/gold</color>
+    <color name="header_subtitle">@color/text_secondary</color>
+
+    <!-- Status -->
+    <color name="active_green">#47B97A</color>
+    <color name="inactive_gray">#5E7867</color>
+    <color name="danger">#E63946</color>
+
+    <!-- Overlay -->
+    <color name="overlay_bg">#E6081B12</color>
+
+    <!-- Notification -->
+    <color name="notification_color">#1E7A4E</color>
+</resources>

@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Islamic Green Palette -->
-    <color name="primary">#145A3A</color>
-    <color name="primary_variant">#0B3F29</color>
+    <color name="primary">#1E8354</color>
+    <color name="primary_variant">#1B8350</color>
     <color name="secondary">#1E7A4E</color>
     <color name="secondary_variant">#16613E</color>
 
     <!-- Emerald Accent (retains existing token names for compatibility) -->
-    <color name="gold">#7CCB9B</color>
-    <color name="gold_light">#A8E0BF</color>
-    <color name="gold_dark">#4FA675</color>
+    <color name="gold">#1E8354</color>
+    <color name="gold_light">#5FB481</color>
+    <color name="gold_dark">#125936</color>
 
     <!-- Backgrounds -->
-    <color name="background">#081B12</color>
-    <color name="surface">#11271D</color>
-    <color name="surface_variant">#183328</color>
-    <color name="card_stroke">#23533D</color>
+    <color name="background">#F5FAF6</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#EAF2EC</color>
+    <color name="card_stroke">#D2E0D6</color>
 
     <!-- Text -->
-    <color name="text_primary">#F3F8F4</color>
-    <color name="text_secondary">#B2C8BA</color>
-    <color name="text_hint">#78927F</color>
+    <color name="text_primary">#102219</color>
+    <color name="text_secondary">#4A6555</color>
+    <color name="text_hint">#8DA093</color>
+
+    <!-- Header Text -->
+    <color name="header_title">#FFFFFF</color>
+    <color name="header_subtitle">#E6FFFFFF</color>
 
     <!-- Status -->
-    <color name="active_green">#47B97A</color>
-    <color name="inactive_gray">#5E7867</color>
-    <color name="danger">#E63946</color>
+    <color name="active_green">#219653</color>
+    <color name="inactive_gray">#A1B2A5</color>
+    <color name="danger">#D32F2F</color>
 
     <!-- Overlay -->
-    <color name="overlay_bg">#E6081B12</color>
+    <color name="overlay_bg">#80081B12</color>
 
     <!-- Notification -->
     <color name="notification_color">#1E7A4E</color>
