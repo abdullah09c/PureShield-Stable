@@ -21,6 +21,7 @@ import com.abdullah09c.pureshield.ui.OverlayActivity
 import com.abdullah09c.pureshield.util.BlockTargets
 import com.abdullah09c.pureshield.util.Prefs
 
+@android.annotation.SuppressLint("AccessibilityServiceApi", "AccessibilityPolicy")
 class BlockerService : AccessibilityService() {
 
     companion object {
@@ -174,14 +175,14 @@ class BlockerService : AccessibilityService() {
                 Prefs.isYouTubeBlocked(this) && isYouTubeShorts(event)
             }
 
-            BlockTargets.PKG_FACEBOOK -> Prefs.isFacebookBlocked(this) && isFacebookReels(event)
+            BlockTargets.PKG_FACEBOOK -> Prefs.isFacebookBlocked(this) && isFacebookReels()
             else -> false
         }
 
         if (shouldBlock) {
             lastBlockedPkg = pkg
             lastBlockTime = now
-            blockWithGlobalAction(toastMessage = TOAST_SHORT_FEED_BLOCKED)
+            blockWithGlobalAction()
         }
     }
 
@@ -194,7 +195,7 @@ class BlockerService : AccessibilityService() {
             if (hasFBLiteFullScreenVideoInRecycler(root)) {
                 lastBlockedPkg = BlockTargets.PKG_FBLITE
                 lastBlockTime = System.currentTimeMillis()
-                blockWithGlobalAction(toastMessage = TOAST_SHORT_FEED_BLOCKED)
+                blockWithGlobalAction()
             }
         }
         fblitePendingBlockRunnable = runnable
@@ -223,79 +224,10 @@ class BlockerService : AccessibilityService() {
         val sourceClass = event.source?.className?.toString() ?: ""
         val isScrollableFeed = sourceClass.contains("RecyclerView") || sourceClass.contains("ViewPager")
 
-        if (hasShortsShortId && isScrollableFeed && !hasEngagementPanel) return true
-        return false
+        return hasShortsShortId && isScrollableFeed && !hasEngagementPanel
     }
 
-    private fun isShortFeedOpen(packageName: String, event: AccessibilityEvent): Boolean {
-        val root = rootInActiveWindow
-        val source = try {
-            event.source
-        } catch (_: Exception) {
-            null
-        }
-
-        // Strong signal: exact full IDs if available.
-        val exactIds = when (packageName) {
-            BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> BlockTargets.YOUTUBE_SHORTS_FULL_VIEW_IDS
-            BlockTargets.PKG_FACEBOOK -> BlockTargets.FACEBOOK_REELS_FULL_VIEW_IDS
-            BlockTargets.PKG_FBLITE -> BlockTargets.FBLITE_REELS_FULL_VIEW_IDS
-            else -> emptySet()
-        }
-        val shortIds = when (packageName) {
-            BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> BlockTargets.YOUTUBE_SHORTS_VIEW_IDS
-            BlockTargets.PKG_FACEBOOK -> BlockTargets.FACEBOOK_REELS_VIEW_IDS
-            BlockTargets.PKG_FBLITE -> BlockTargets.FBLITE_REELS_VIEW_IDS
-            else -> emptySet()
-        }
-        if (matchesAnyNodeTree(root, source, exactIds = exactIds, shortIds = shortIds, packageName = packageName, event = event)) {
-            // YouTube watch pages can show panels; avoid false positive there.
-            if (packageName == BlockTargets.PKG_YOUTUBE || packageName == BlockTargets.PKG_YOUTUBE_REVANCED) {
-                val hasEngagementPanel = matchesAnyNodeTree(root, source, exactIds = BlockTargets.YOUTUBE_ENGAGEMENT_PANEL_FULL_VIEW_IDS, shortIds = emptySet(), packageName = packageName, event = event)
-                if (!hasEngagementPanel) return true
-            } else {
-                return true
-            }
-        }
-
-        // Fallback for obfuscated IDs: scan both trees for class/desc/text patterns.
-        val fallback = detectByRecursiveHeuristics(root, source, packageName)
-        if (fallback) return true
-
-        if (packageName == BlockTargets.PKG_FACEBOOK || packageName == BlockTargets.PKG_FBLITE) {
-            val semanticHits = collectSemanticKeywordHits(
-                root,
-                source,
-                setOf("reel", "reels", "short video", "watch reels", "reels and short videos")
-            )
-            val semanticSourceClass = try { event.source?.className?.toString()?.lowercase() ?: "" } catch (_: Exception) { "" }
-            val looksScrollableContext = semanticSourceClass.contains("recycler") || semanticSourceClass.contains("viewpager") || semanticSourceClass.contains("pager")
-            if ("short video" in semanticHits || (semanticHits.size >= 2 && looksScrollableContext)) {
-                return true
-            }
-        }
-
-        // Event-level fallback when node tree is sparse.
-        val eventClass = event.className?.toString()?.lowercase() ?: ""
-        val eventDesc = event.contentDescription?.toString()?.lowercase() ?: ""
-        val sourceClass = try { event.source?.className?.toString()?.lowercase() ?: "" } catch (_: Exception) { "" }
-        val eventTextBlob = buildString {
-            event.text?.forEach { t ->
-                append(t?.toString()?.lowercase())
-                append('|')
-            }
-        }
-        val eventBlob = "$eventClass|$eventDesc|$sourceClass|$eventTextBlob"
-        return when (packageName) {
-            BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> {
-                (eventClass.contains("shorts") || eventDesc.contains("shorts")) && !eventDesc.contains("comments")
-            }
-
-            else -> false
-        }
-    }
-
-    private fun isFacebookReels(event: AccessibilityEvent): Boolean {
+    private fun isFacebookReels(): Boolean {
         val root = rootInActiveWindow ?: return false
 
         // Detection based on live UI dump of Facebook Reels tab.
@@ -354,29 +286,6 @@ class BlockerService : AccessibilityService() {
     }
 
     /**
-     * Checks if FB Lite has a video_view node that lives inside a scrollable RecyclerView.
-     * From the live dump: RecyclerView at bounds [0,151][720,1471] is scrollable=true,
-     * and com.facebook.lite:id/video_view is a descendant filling [0,194][720,1471].
-     */
-    private fun isFBLiteVideoInsideScrollableRecycler(root: AccessibilityNodeInfo): Boolean {
-        val queue = ArrayDeque<AccessibilityNodeInfo>()
-        queue.add(root)
-        var inspected = 0
-        while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
-            val node = queue.removeFirst()
-            val cls = node.className?.toString() ?: ""
-            if (cls.contains("RecyclerView") && node.isScrollable) {
-                if (containsAnyViewId(node, setOf("video_view"))) return true
-            }
-            for (i in 0 until node.childCount) {
-                node.getChild(i)?.let { queue.add(it) }
-            }
-            inspected++
-        }
-        return false
-    }
-
-    /**
      * Structural heuristic based on live UI dumps:
      *
      * Reels player:    RecyclerView (scrollable) + video_view + NO video_player_controls/inline_progress_bar
@@ -417,142 +326,6 @@ class BlockerService : AccessibilityService() {
 
     // ─── Node Traversal Helpers ─────────────────────────────────────────────
 
-    private fun detectByRecursiveHeuristics(
-        root: AccessibilityNodeInfo?,
-        source: AccessibilityNodeInfo?,
-        packageName: String
-    ): Boolean {
-        val (structuralKeywords, semanticKeywords) = when (packageName) {
-            BlockTargets.PKG_YOUTUBE, BlockTargets.PKG_YOUTUBE_REVANCED -> Pair(
-                setOf("reel", "shorts", "pivot"),
-                setOf("shorts", "short video")
-            )
-
-            BlockTargets.PKG_FACEBOOK, BlockTargets.PKG_FBLITE -> Pair(
-                setOf("reel", "short_video", "video_timeline"),
-                setOf("reels", "short video")
-            )
-
-            else -> Pair(emptySet(), emptySet())
-        }
-
-        return scanNodeTrees(root, source) { node ->
-            val viewId = node.viewIdResourceName?.lowercase() ?: ""
-            val className = node.className?.toString()?.lowercase() ?: ""
-            val desc = node.contentDescription?.toString()?.lowercase() ?: ""
-            val text = node.text?.toString()?.lowercase() ?: ""
-
-            val structuralBlob = "$viewId|$className"
-            val semanticBlob = "$desc|$text"
-
-            val structuralHit = structuralKeywords.any { structuralBlob.contains(it) }
-            val semanticHit = semanticKeywords.any { semanticBlob.contains(it) }
-            structuralHit to semanticHit
-        }
-    }
-
-    private fun matchesAnyNodeTree(
-        root: AccessibilityNodeInfo?,
-        source: AccessibilityNodeInfo?,
-        exactIds: Set<String>,
-        shortIds: Set<String>,
-        packageName: String,
-        event: AccessibilityEvent
-    ): Boolean {
-        if (scanNodeTrees(root, source) { node ->
-                val viewId = node.viewIdResourceName ?: return@scanNodeTrees false to false
-                val shortId = viewId.substringAfter("/")
-                val packageMatches = viewId.startsWith(packageName)
-                val exactMatch = exactIds.contains(viewId)
-                val shortMatch = shortIds.contains(shortId)
-                (packageMatches && (exactMatch || shortMatch)) to false
-            }
-        ) return true
-
-        // Fallback for event/source class signals when tree scanning misses exact ids.
-        val sourceClass = try { event.source?.className?.toString()?.lowercase() } catch (_: Exception) { null }
-        if (packageName == BlockTargets.PKG_YOUTUBE || packageName == BlockTargets.PKG_YOUTUBE_REVANCED) {
-            if (sourceClass?.contains("recycler") == true || sourceClass?.contains("viewpager") == true) {
-                return scanNodeTrees(root, source) { node ->
-                    val viewId = node.viewIdResourceName ?: return@scanNodeTrees false to false
-                    val shortId = viewId.substringAfter("/")
-                    (shortId == "reel_recycler" || shortId == "shorts_player_root") to false
-                }
-            }
-        }
-        return false
-    }
-
-    private fun scanNodeTrees(
-        root: AccessibilityNodeInfo?,
-        source: AccessibilityNodeInfo?,
-        matcher: (AccessibilityNodeInfo) -> Pair<Boolean, Boolean>
-    ): Boolean {
-        fun scan(start: AccessibilityNodeInfo?): Boolean {
-            if (start == null) return false
-            val queue = ArrayDeque<AccessibilityNodeInfo>()
-            queue.add(start)
-            var inspected = 0
-            var structuralHits = 0
-            var semanticHits = 0
-
-            while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
-                val node = queue.removeFirst()
-                val (structuralHit, semanticHit) = matcher(node)
-                if (structuralHit) structuralHits++
-                if (semanticHit) semanticHits++
-                if ((structuralHits >= 1 && semanticHits >= 1) || structuralHits >= 2 || structuralHit) {
-                    return true
-                }
-
-                for (i in 0 until node.childCount) {
-                    node.getChild(i)?.let { queue.add(it) }
-                }
-                inspected++
-            }
-            return false
-        }
-
-        return scan(source) || scan(root)
-    }
-
-    private fun collectSemanticKeywordHits(
-        root: AccessibilityNodeInfo?,
-        source: AccessibilityNodeInfo?,
-        keywords: Set<String>
-    ): Set<String> {
-        val hits = mutableSetOf<String>()
-
-        fun scan(start: AccessibilityNodeInfo?) {
-            if (start == null || hits.size == keywords.size) return
-            val queue = ArrayDeque<AccessibilityNodeInfo>()
-            queue.add(start)
-            var inspected = 0
-
-            while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN && hits.size < keywords.size) {
-                val node = queue.removeFirst()
-                val blob = buildString {
-                    append(node.text?.toString()?.lowercase())
-                    append('|')
-                    append(node.contentDescription?.toString()?.lowercase())
-                }
-
-                keywords.forEach { keyword ->
-                    if (blob.contains(keyword)) hits.add(keyword)
-                }
-
-                for (i in 0 until node.childCount) {
-                    node.getChild(i)?.let { queue.add(it) }
-                }
-                inspected++
-            }
-        }
-
-        scan(source)
-        scan(root)
-        return hits
-    }
-
     /**
      * BFS traversal to find if any node has one of the target view IDs.
      * Stops early as soon as a match is found (efficient).
@@ -585,29 +358,9 @@ class BlockerService : AccessibilityService() {
         return false
     }
 
-    /**
-     * BFS traversal to check if any node's content description matches our targets.
-     */
-    private fun containsAnyContentDesc(root: AccessibilityNodeInfo, targets: Set<String>): Boolean {
-        val queue = ArrayDeque<AccessibilityNodeInfo>()
-        queue.add(root)
-        var inspected = 0
-        val maxNodes = 2500
-        while (queue.isNotEmpty() && inspected < maxNodes) {
-            val node = queue.removeFirst()
-            val desc = node.contentDescription?.toString()
-            if (desc != null && targets.any { desc.contains(it, ignoreCase = true) }) return true
-            for (i in 0 until node.childCount) {
-                node.getChild(i)?.let { queue.add(it) }
-            }
-            inspected++
-        }
-        return false
-    }
-
-    private fun blockWithGlobalAction(toastMessage: String) {
+    private fun blockWithGlobalAction() {
         mainHandler.post {
-            Toast.makeText(applicationContext, toastMessage, Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, TOAST_SHORT_FEED_BLOCKED, Toast.LENGTH_LONG).show()
             showBlockOverlay()
         }
     }
@@ -667,7 +420,7 @@ class BlockerService : AccessibilityService() {
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(getString(R.string.notification_text))
             .setSmallIcon(R.drawable.ic_shield_notif)
-            .setColor(getColor(R.color.notification_color))
+            .setColor(androidx.core.content.ContextCompat.getColor(this, R.color.notification_color))
             .setContentIntent(openAppIntent)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
