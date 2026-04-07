@@ -34,7 +34,7 @@
             android:text="Set Protection PIN"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/gold"
+            android:textColor="@color/green"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:text="○ ○ ○ ○"
             android:textSize="32sp"
-            android:textColor="@color/gold"
+            android:textColor="@color/green"
             android:letterSpacing="0.3"
             android:layout_marginBottom="32dp" />
 

@@ -7,9 +7,9 @@
     <color name="secondary_variant">#16613E</color>
 
     <!-- Emerald Accent (retains existing token names for compatibility) -->
-    <color name="gold">#7CCB9B</color>
-    <color name="gold_light">#A8E0BF</color>
-    <color name="gold_dark">#4FA675</color>
+    <color name="green">#7CCB9B</color>
+    <color name="green_light">#A8E0BF</color>
+    <color name="green_dark">#4FA675</color>
 
     <!-- Backgrounds -->
     <color name="background">#081B12</color>
@@ -23,7 +23,7 @@
     <color name="text_hint">#78927F</color>
 
     <!-- Header Text -->
-    <color name="header_title">@color/gold</color>
+    <color name="header_title">@color/green</color>
     <color name="header_subtitle">@color/text_secondary</color>
 
     <!-- Status -->

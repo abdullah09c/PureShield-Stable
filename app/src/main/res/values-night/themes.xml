@@ -42,9 +42,9 @@
         <item name="strokeWidth">1dp</item>
     </style>
 
-    <!-- Gold Button -->
-    <style name="PureShield.Button.Gold" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/gold</item>
+    <!-- green Button -->
+    <style name="PureShield.Button.green" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/green</item>
         <item name="android:textColor">@color/background</item>
         <item name="cornerRadius">12dp</item>
         <item name="android:textStyle">bold</item>
@@ -52,8 +52,8 @@
 
     <!-- Outline Button -->
     <style name="PureShield.Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="strokeColor">@color/gold</item>
-        <item name="android:textColor">@color/gold</item>
+        <item name="strokeColor">@color/green</item>
+        <item name="android:textColor">@color/green</item>
         <item name="cornerRadius">12dp</item>
     </style>
 
@@ -66,7 +66,7 @@
     <!-- Section Title -->
     <style name="PureShield.SectionTitle">
         <item name="android:textSize">11sp</item>
-        <item name="android:textColor">@color/gold</item>
+        <item name="android:textColor">@color/green</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.12</item>
         <item name="android:textAllCaps">true</item>
@@ -103,7 +103,7 @@
     </style>
 
     <style name="PureShield.AlertDialog.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="android:textColor">@color/gold</item>
+        <item name="android:textColor">@color/green</item>
     </style>
 
 </resources>

@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:text="💬"
                 android:textSize="40sp"
-                android:textColor="@color/gold_light"
+                android:textColor="@color/green_light"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp" />
 
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:text="وَفِّقْنَا لِمَا تُحِبُّ وَتَرْضَى"
                 android:textSize="13sp"
-                android:textColor="@color/gold_dark"
+                android:textColor="@color/green_dark"
                 android:fontFamily="serif"
                 android:textAlignment="center"
                 android:layout_marginTop="10dp"

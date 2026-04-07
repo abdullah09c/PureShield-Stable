@@ -7,11 +7,11 @@
     android:background="@color/background"
     android:padding="32dp">
 
-    <!-- Gold top line -->
+    <!-- green top line -->
     <View
         android:layout_width="80dp"
         android:layout_height="2dp"
-        android:background="@color/gold"
+        android:background="@color/green"
         android:layout_marginBottom="32dp" />
 
     <!-- App icon -->
@@ -28,7 +28,7 @@
         android:text="PureShield"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:textColor="@color/gold"
+        android:textColor="@color/green"
         android:layout_marginBottom="4dp" />
 
     <!-- Divider star -->
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:text="✦"
         android:textSize="16sp"
-        android:textColor="@color/gold_dark"
+        android:textColor="@color/green_dark"
         android:layout_marginBottom="24dp" />
 
     <!-- User's custom message (Ayah / reminder) -->
@@ -52,7 +52,7 @@
         android:fontFamily="serif"
         android:layout_marginBottom="40dp" />
 
-    <!-- Gold decorative line -->
+    <!-- green decorative line -->
     <View
         android:layout_width="60dp"
         android:layout_height="1dp"
@@ -65,14 +65,14 @@
         android:layout_width="200dp"
         android:layout_height="52dp"
         android:text="@string/btn_go_back"
-        style="@style/PureShield.Button.Gold"
+        style="@style/PureShield.Button.green"
         android:textSize="15sp" />
 
-    <!-- Bottom gold line -->
+    <!-- Bottom green line -->
     <View
         android:layout_width="80dp"
         android:layout_height="2dp"
-        android:background="@color/gold"
+        android:background="@color/green"
         android:layout_marginTop="32dp" />
 
 </LinearLayout>

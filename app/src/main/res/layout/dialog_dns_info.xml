@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:text="CORE FEATURES"
         android:textSize="12sp"
-        android:textColor="@color/gold"
+        android:textColor="@color/green"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:text="HOW TO SET UP"
         android:textSize="12sp"
-        android:textColor="@color/gold"
+        android:textColor="@color/green"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 

@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:text="APPS TO BLOCK"
                 android:textSize="11sp"
-                android:textColor="@color/gold"
+                android:textColor="@color/green"
                 android:textStyle="bold"
                 android:letterSpacing="0.12"
                 android:textAllCaps="true"
@@ -205,7 +205,7 @@
                 android:layout_height="wrap_content"
                 android:text="BLOCK SCREEN MESSAGE"
                 android:textSize="11sp"
-                android:textColor="@color/gold"
+                android:textColor="@color/green"
                 android:textStyle="bold"
                 android:letterSpacing="0.12"
                 android:textAllCaps="true"
@@ -241,7 +241,7 @@
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:hint="@string/hint_block_message"
-                        app:boxStrokeColor="@color/gold_dark"
+                        app:boxStrokeColor="@color/green_dark"
                         app:hintTextColor="@color/text_secondary">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -273,7 +273,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:text="Save Settings"
-                android:backgroundTint="@color/gold"
+                android:backgroundTint="@color/green"
                 android:textColor="@color/background"
                 app:cornerRadius="12dp"
                 android:textStyle="bold" />
