@@ -81,7 +81,7 @@
     <string name="about_description">PureShield was built with the intention of helping Muslims and everyone build healthier screen habits — blocking short-form content and filtering harmful web content, all without collecting any data.</string>
     <string name="about_no_internet">No internet permission</string>
     <string name="about_no_data">No data collected</string>
-    <string name="about_free">100% free &amp; open source</string>
+    <string name="about_free">100%% free &amp; open source</string>
     <string name="about_privacy">Everything stays on your device</string>
     <string name="about_open_source">View Source Code</string>
     <string name="about_license">Licensed under GPL-3.0</string>

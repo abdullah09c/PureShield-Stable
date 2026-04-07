@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
 }
 
 // Compatibility shim for IDEs/tools that still query this legacy Kotlin sync task.
@@ -8,12 +7,12 @@ tasks.register("prepareKotlinBuildScriptModel")
 
 android {
     namespace 'com.abdullah09c.pureshield'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.abdullah09c.pureshield"
         minSdk 23
-        targetSdk 35
+        targetSdk 36
         versionCode 5
         versionName "1.1.1"
     }
@@ -35,10 +34,6 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
     buildFeatures {
         viewBinding true
         buildConfig true
@@ -53,4 +48,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.preference:preference-ktx:1.2.1'
+}
+
+def toolchainService = extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService)
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = toolchainService.compilerFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
