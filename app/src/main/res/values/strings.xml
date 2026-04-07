@@ -68,7 +68,7 @@
     <string name="pin_hint">Enter 4-digit PIN</string>
 
     <!-- About -->
-    <string name="about_version">Version 1.0.0</string>
+    <string name="about_version">Version 1.0.2</string>
     <string name="about_developer">Abdullah Al Fuwad</string>
     <string name="about_github">github.com/abdullah09c</string>
     <string name="about_github_url">https://github.com/abdullah09c</string>
