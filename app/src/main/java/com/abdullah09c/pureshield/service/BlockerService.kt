@@ -34,6 +34,7 @@ class BlockerService : AccessibilityService() {
 
         private const val BLOCK_ACTION_COOLDOWN_MS = 900L
         private const val FBLITE_CONFIRM_DELAY_MS = 500L  // Wait before confirming Reels block
+        private const val FB_CONFIRM_DELAY_MS = 400L      // Wait before confirming FB Reels block
         private const val MAX_NODE_SCAN = 1800
         private const val TOAST_SHORT_FEED_BLOCKED = "Reels/Shorts Blocked"
         private const val TOAST_TIKTOK_BLOCKED = "TikTok Blocked"
@@ -53,10 +54,11 @@ class BlockerService : AccessibilityService() {
     private var isForegroundShown = false
 
     // Pending confirmation runnable for FB Lite Reels detection.
-    // We delay the block by FBLITE_CONFIRM_DELAY_MS and re-check to avoid false
-    // positives when fast-scrolling the news feed causes inline videos to briefly
-    // look like Reels (before video_player_controls renders in the accessibility tree).
+    // We delay the block and re-check to avoid false positives when fast-scrolling
+    // the news feed causes inline videos to briefly look like Reels.
     private var fblitePendingBlockRunnable: Runnable? = null
+    // Pending confirmation runnable for FB (main app) Reels detection.
+    private var fbPendingBlockRunnable: Runnable? = null
 
     // ─── Lifecycle ──────────────────────────────────────────────────────────
 
@@ -124,9 +126,12 @@ class BlockerService : AccessibilityService() {
         val pkg = event.packageName?.toString() ?: return
         if (pkg == packageName || pkg == "com.android.systemui") return
 
-        // Cancel any pending FB Lite block if the user has navigated away from it
+        // Cancel pending delayed blocks if the user navigated away
         if (pkg != BlockTargets.PKG_FBLITE) {
             cancelPendingFBLiteBlock()
+        }
+        if (pkg != BlockTargets.PKG_FACEBOOK) {
+            cancelPendingFBBlock()
         }
 
         // Only process events from our target apps
@@ -169,13 +174,21 @@ class BlockerService : AccessibilityService() {
             return
         }
 
+        // FB main app: use delayed-confirm pattern to avoid false positives
+        if (pkg == BlockTargets.PKG_FACEBOOK && Prefs.isFacebookBlocked(this)) {
+            if (isFacebookReels()) {
+                scheduleFBBlockIfNotPending()
+            } else {
+                cancelPendingFBBlock()
+            }
+            return
+        }
+
         val shouldBlock = when (pkg) {
             BlockTargets.PKG_YOUTUBE,
             BlockTargets.PKG_YOUTUBE_REVANCED -> {
                 Prefs.isYouTubeBlocked(this) && isYouTubeShorts(event)
             }
-
-            BlockTargets.PKG_FACEBOOK -> Prefs.isFacebookBlocked(this) && isFacebookReels()
             else -> false
         }
 
@@ -207,6 +220,26 @@ class BlockerService : AccessibilityService() {
         fblitePendingBlockRunnable = null
     }
 
+    private fun scheduleFBBlockIfNotPending() {
+        if (fbPendingBlockRunnable != null) return  // already scheduled
+        val runnable = Runnable {
+            fbPendingBlockRunnable = null
+            // Re-confirm: still looks like Reels after the delay?
+            if (isFacebookReels()) {
+                lastBlockedPkg = BlockTargets.PKG_FACEBOOK
+                lastBlockTime = System.currentTimeMillis()
+                blockWithGlobalAction()
+            }
+        }
+        fbPendingBlockRunnable = runnable
+        mainHandler.postDelayed(runnable, FB_CONFIRM_DELAY_MS)
+    }
+
+    private fun cancelPendingFBBlock() {
+        fbPendingBlockRunnable?.let { mainHandler.removeCallbacks(it) }
+        fbPendingBlockRunnable = null
+    }
+
     // ─── Detection Logic ────────────────────────────────────────────────────
 
     private fun isYouTubeShorts(event: AccessibilityEvent): Boolean {
@@ -230,40 +263,51 @@ class BlockerService : AccessibilityService() {
     private fun isFacebookReels(): Boolean {
         val root = rootInActiveWindow ?: return false
 
-        // Detection based on live UI dump of Facebook Reels tab.
+        // Detection based on LIVE UI dump of Facebook Reels (2026-04-07).
         // Facebook obfuscates all resource-ids with "(name removed)", so we rely purely
-        // on content-desc and text values which are stable and unique to Reels.
+        // on content-desc values which are stable and unique to the Reels player.
         //
-        // Key signals found in dump:
-        //   "Reels tab details"         — container for each Reel item in the RecyclerView
-        //   "reels, tab 2 of 6"         — bottom nav tab selected=true (user is on Reels tab)
-        //   "Create reel"               — Reels-specific action button
-        //   "Navigate to your Reels profile" — Reels-specific header button
-        //   "AudioOn" / "AudioOff"      — mute button specific to Reels player
+        // Confirmed signals in live Reels dump:
+        //   "Reel details"                     — individual Reel item node (strong signal)
+        //   "Navigate to your Reels profile"   — header button unique to Reels player
+        //   "Tap to show video controls"        — Reels video player controls hint
+        //   "Pick viewer content to show"       — Reels audience filter button
+        //
+        // NOTE: Old signal "reels tab details" was NOT found in live dump — removed.
+        // NOTE: resource-ids are all "(name removed)" — cannot use them.
 
         val queue = ArrayDeque<AccessibilityNodeInfo>()
         queue.add(root)
         var inspected = 0
-        var hasReelsTabDetails = false
-        var hasReelsTabSelected = false
-        var hasReelsHeaderButton = false
+        var reelsSignalCount = 0
 
         while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
             val node = queue.removeFirst()
-            val desc = node.contentDescription?.toString()?.lowercase() ?: ""
-            val text = node.text?.toString()?.lowercase() ?: ""
+            val desc = node.contentDescription?.toString() ?: ""
+            val descLower = desc.lowercase()
 
-            // Definitive: this content-desc only appears inside the Reels player feed
-            if (desc == "reels tab details") hasReelsTabDetails = true
+            // Strong definitive signal — individual reel item container
+            if (descLower == "reel details") return true
 
-            // Nav tab selected = user is currently on Reels tab
-            if (desc.startsWith("reels") && desc.contains("tab") && node.isSelected) hasReelsTabSelected = true
+            // Header button that only appears when inside the Reels player
+            if (descLower == "navigate to your reels profile") reelsSignalCount++
 
-            // Reels-specific header/action buttons
-            if (desc == "create reel" || desc == "navigate to your reels profile" || desc == "audioon" || desc == "audiooff") hasReelsHeaderButton = true
+            // Reels video player hint text — only shown inside Reels player
+            if (descLower == "tap to show video controls") reelsSignalCount++
 
-            // Quick exit: if any strong messaging signal found, abort immediately
-            if (desc.contains("type a message") || desc.contains("active now") || text.contains("type a message")) return false
+            // Audience filter button only rendered in Reels player header
+            if (descLower == "pick viewer content to show") reelsSignalCount++
+
+            // "Create reel" button sometimes visible in Reels feed header
+            if (descLower == "create reel") reelsSignalCount++
+
+            // Quick exit: messaging-specific descriptors mean we're NOT in Reels
+            if (descLower.contains("type a message") ||
+                descLower.contains("active now") ||
+                descLower.contains("send message")) return false
+
+            // If we have 2+ supporting signals, that's sufficient confidence
+            if (reelsSignalCount >= 2) return true
 
             for (i in 0 until node.childCount) {
                 node.getChild(i)?.let { queue.add(it) }
@@ -271,13 +315,8 @@ class BlockerService : AccessibilityService() {
             inspected++
         }
 
-        // Primary signal: Reels item container present = definitely in Reels feed
-        if (hasReelsTabDetails) return true
-
-        // Secondary: tab is selected (on Reels tab) + at least one Reels UI button visible
-        if (hasReelsTabSelected && hasReelsHeaderButton) return true
-
-        return false
+        // At least 1 strong supporting signal (e.g. Reels profile button alone)
+        return reelsSignalCount >= 1
     }
 
     private fun isFBLiteReels(): Boolean {
