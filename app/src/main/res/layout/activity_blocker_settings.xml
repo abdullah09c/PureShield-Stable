@@ -63,11 +63,17 @@
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_youtubeshorts" />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="▶ YouTube Shorts"
+                            android:text="YouTube Shorts"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -92,11 +98,17 @@
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_facebook" />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="f  Facebook Reels"
+                            android:text="Facebook Reels"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -121,11 +133,17 @@
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_fblite" />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="f  Facebook Lite Reels"
+                            android:text="Facebook Lite Reels"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -150,11 +168,17 @@
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_instagram" />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="◉  Instagram (Full App)"
+                            android:text="Instagram (Full App)"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -179,11 +203,17 @@
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_tiktok" />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="♪  TikTok (Full App)"
+                            android:text="TikTok (Full App)"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 

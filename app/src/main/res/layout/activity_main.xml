@@ -60,7 +60,17 @@
             android:orientation="vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:paddingTop="20dp">
+            android:paddingTop="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
+                android:textSize="14sp"
+                android:textColor="@color/green_dark"
+                android:textAlignment="center"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="serif" />
 
             <!-- Section: Protection -->
             <TextView
@@ -367,17 +377,6 @@
                     style="@style/PureShield.Button.green" />
 
             </LinearLayout>
-
-            <!-- Islamic footer -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
-                android:textSize="14sp"
-                android:textColor="@color/green_dark"
-                android:textAlignment="center"
-                android:layout_marginTop="8dp"
-                android:fontFamily="serif" />
 
         </LinearLayout>
     </LinearLayout>
