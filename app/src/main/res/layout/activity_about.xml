@@ -23,12 +23,10 @@
             android:padding="24dp">
 
             <!-- App icon + name -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🛡️"
-                android:textSize="64sp"
-                android:textColor="@color/gold_light"
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@mipmap/ic_launcher"
                 android:layout_marginTop="16dp" />
 
             <TextView
