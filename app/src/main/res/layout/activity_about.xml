@@ -42,7 +42,7 @@
                 android:id="@+id/tvVersion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Version 1.1.0"
+                android:text="Version 1.1.1"
                 android:textSize="13sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp" />
@@ -157,6 +157,15 @@
                         style="@style/PureShield.Button.Outline"
                         android:textSize="12sp" />
 
+                    <Button
+                        android:id="@+id/btnPrivacyPolicy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="10dp"
+                        android:text="🔒  Privacy Policy"
+                        style="@style/PureShield.Button.Outline"
+                        android:textSize="12sp" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -166,6 +175,15 @@
                 android:layout_height="wrap_content"
                 android:text="Licensed under GPL-3.0"
                 android:textSize="11sp"
+                android:textColor="@color/text_hint"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Accessibility and Device Admin are used only for user-enabled blocking and uninstall protection on this device."
+                android:textSize="11sp"
+                android:textAlignment="center"
                 android:textColor="@color/text_hint"
                 android:layout_marginBottom="8dp" />
 

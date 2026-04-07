@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.abdullah09c.pureshield.R
 import com.abdullah09c.pureshield.databinding.ActivityAboutBinding
@@ -26,6 +27,15 @@ class AboutActivity : AppCompatActivity() {
 
         binding.btnGithub.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_github_url))))
+        }
+
+        binding.btnPrivacyPolicy.setOnClickListener {
+            val policyUrl = getString(R.string.privacy_policy_url)
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(policyUrl)))
+            } catch (_: Exception) {
+                Toast.makeText(this, getString(R.string.unable_open_link), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

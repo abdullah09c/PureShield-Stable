@@ -467,18 +467,15 @@ class BlockerService : AccessibilityService() {
             .addAction(0, getString(R.string.notification_action_stop), stopPendingIntent)
             .build()
 
-        startForeground(NOTIF_ID, notification)
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.notify(NOTIF_ID, notification)
         isForegroundShown = true
     }
 
     private fun stopForegroundCompat() {
         if (isForegroundShown) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-            } else {
-                @Suppress("DEPRECATION")
-                stopForeground(true)
-            }
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.cancel(NOTIF_ID)
         }
         isForegroundShown = false
     }

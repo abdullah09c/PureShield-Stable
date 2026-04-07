@@ -17,11 +17,5 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         // Remove notification immediately; service will also reconcile state on next event.
         NotificationManagerCompat.from(context).cancel(BlockerService.NOTIF_ID)
-
-        // Ask service to sync foreground state if it accepts start commands on this device.
-        val syncIntent = Intent(context, BlockerService::class.java).apply {
-            action = BlockerService.ACTION_SYNC_NOTIFICATION
-        }
-        context.startService(syncIntent)
     }
 }

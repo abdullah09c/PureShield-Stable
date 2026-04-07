@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         adminComponent = ComponentName(this, AdminReceiver::class.java)
 
         setupClickListeners()
-        requestBatteryOptimizationExemption()
+        showBatteryOptimizationInfo()
         requestNotificationPermission()
     }
 
@@ -106,9 +106,16 @@ class MainActivity : AppCompatActivity() {
                     binding.switchBlocker.isChecked = false
                     showAccessibilityDialog()
                 } else {
-                    Prefs.setBlockerEnabled(this, true)
-                    syncBlockerServiceNotification()
-                    updateBlockerCard()
+                    showAccessibilityDisclosureDialog(
+                        onAccept = {
+                            Prefs.setBlockerEnabled(this, true)
+                            syncBlockerServiceNotification()
+                            updateBlockerCard()
+                        },
+                        onCancel = {
+                            binding.switchBlocker.isChecked = false
+                        }
+                    )
                 }
             } else {
                 Prefs.setBlockerEnabled(this, false)
@@ -131,16 +138,22 @@ class MainActivity : AppCompatActivity() {
         binding.switchProtection.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 if (!dpm.isAdminActive(adminComponent)) {
-                    // Launch device admin enrollment
-                    val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                        putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
-                        putExtra(
-                            DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                            "PureShield uses Device Admin to prevent impulsive uninstallation."
-                        )
-                    }
-                    startActivity(intent)
-                    binding.switchProtection.isChecked = false
+                    showDeviceAdminDisclosureDialog(
+                        onAccept = {
+                            val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                                putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
+                                putExtra(
+                                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                                    "PureShield uses Device Admin only for uninstall protection on your device."
+                                )
+                            }
+                            startActivity(intent)
+                            binding.switchProtection.isChecked = false
+                        },
+                        onCancel = {
+                            binding.switchProtection.isChecked = false
+                        }
+                    )
                 } else {
                     // Already admin, just show as active
                 }
@@ -303,26 +316,40 @@ class MainActivity : AppCompatActivity() {
 
     // ─── System Permission Helpers ───────────────────────────────────────────
 
-    private fun requestBatteryOptimizationExemption() {
+    private fun showBatteryOptimizationInfo() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val pm = getSystemService(android.os.PowerManager::class.java)
             if (!pm.isIgnoringBatteryOptimizations(packageName)) {
                 MaterialAlertDialogBuilder(this)
                     .setTitle(getString(R.string.battery_opt_title))
                     .setMessage(getString(R.string.battery_opt_msg))
-                    .setPositiveButton("Disable Optimization") { _, _ ->
-                        try {
-                            startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                                data = Uri.parse("package:$packageName")
-                            })
-                        } catch (_: Exception) {
-                            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-                        }
+                    .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
+                        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
                     }
-                    .setNegativeButton("Later", null)
+                    .setNegativeButton(getString(R.string.later), null)
                     .show()
             }
         }
+    }
+
+    private fun showAccessibilityDisclosureDialog(onAccept: () -> Unit, onCancel: () -> Unit) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.accessibility_disclosure_title))
+            .setMessage(getString(R.string.accessibility_disclosure_msg))
+            .setPositiveButton(getString(R.string.continue_label)) { _, _ -> onAccept() }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> onCancel() }
+            .setOnCancelListener { onCancel() }
+            .show()
+    }
+
+    private fun showDeviceAdminDisclosureDialog(onAccept: () -> Unit, onCancel: () -> Unit) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.device_admin_disclosure_title))
+            .setMessage(getString(R.string.device_admin_disclosure_msg))
+            .setPositiveButton(getString(R.string.continue_label)) { _, _ -> onAccept() }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> onCancel() }
+            .setOnCancelListener { onCancel() }
+            .show()
     }
 
     private fun requestNotificationPermission() {

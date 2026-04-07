@@ -5,7 +5,7 @@
 
     <!-- Service -->
     <string name="service_label">PureShield</string>
-    <string name="service_description">PureShield needs the Accessibility Service to detect and block distracting short-form videos (like Shorts, Reels, and TikTok) to protect your focus.\n\nPrivacy First: PureShield does NOT collect, store, or share any personal data. It does not have internet access.</string>
+    <string name="service_description">PureShield uses Accessibility Service only to detect supported distraction screens (like Shorts, Reels, and TikTok) and block them locally on your device.\n\nPrivacy First: PureShield does NOT collect, store, or share personal data, and it does not have internet access.</string>
     <string name="notification_channel_name">PureShield Active</string>
     <string name="notification_channel_desc">Shows while PureShield is protecting your screen</string>
     <string name="notification_title">PureShield is Active</string>
@@ -18,6 +18,10 @@
     <string name="title_feedback">Feedback</string>
     <string name="title_pin">Uninstall Protection</string>
     <string name="title_dns">Safe Internet</string>
+    <string name="accessibility_disclosure_title">Enable Accessibility Control</string>
+    <string name="accessibility_disclosure_msg">PureShield needs Accessibility Service to detect the active screen inside supported apps and block the short-form feeds you selected. It works locally on your device and does not send your screen data anywhere.</string>
+    <string name="device_admin_disclosure_title">Enable Uninstall Protection</string>
+    <string name="device_admin_disclosure_msg">PureShield uses Device Admin only to prevent impulsive uninstallation from this device. You can still disable it later with your PIN.</string>
 
     <!-- Home Screen -->
     <string name="card_blocker_title">Reels &amp; Shorts Blocker</string>
@@ -66,12 +70,14 @@
     <string name="pin_wrong">Incorrect PIN. Try again.</string>
     <string name="pin_set_success">Protection enabled!</string>
     <string name="pin_hint">Enter 4-digit PIN</string>
+    <string name="continue_label">Continue</string>
 
     <!-- About -->
-    <string name="about_version">Version 1.1.0</string>
+    <string name="about_version">Version 1.1.1</string>
     <string name="about_developer">Abdullah Al Fuwad</string>
     <string name="about_github">github.com/abdullah09c</string>
     <string name="about_github_url">https://github.com/abdullah09c</string>
+    <string name="privacy_policy_url">https://github.com/abdullah09c/PureShield/blob/main/PRIVACY_POLICY.md</string>
     <string name="about_description">PureShield was built with the intention of helping Muslims and everyone build healthier screen habits — blocking short-form content and filtering harmful web content, all without collecting any data.</string>
     <string name="about_no_internet">No internet permission</string>
     <string name="about_no_data">No data collected</string>
@@ -98,5 +104,8 @@
     <string name="disabled">Disabled</string>
     <string name="boot_start_label">Start on Boot</string>
     <string name="battery_opt_title">Disable Battery Optimization</string>
-    <string name="battery_opt_msg">To keep PureShield running reliably, please disable battery optimization for this app.</string>
+    <string name="battery_opt_msg">Battery optimization can reduce how quickly PureShield responds in the background. You can open system settings and choose whether to exempt it.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="later">Later</string>
+    <string name="unable_open_link">Unable to open link</string>
 </resources>
