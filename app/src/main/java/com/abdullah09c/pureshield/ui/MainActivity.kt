@@ -267,24 +267,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showAccessibilityDialog() {
-        val msg = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            "To enable PureShield:\n\n" +
-            "1. Tap 'Open Settings'\n" +
-            "2. Find 'PureShield'\n" +
-            "3. Tap it and enable the service\n\n" +
-            "⚠️ On Android 13+: If you see 'Restricted Setting', tap the 3-dot menu → Allow Restricted Settings first."
-        } else {
-            "Tap 'Open Settings', find PureShield and enable the accessibility service."
+        val dialogView = layoutInflater.inflate(R.layout.dialog_accessibility_guide, null)
+        
+        val containerA13Warning = dialogView.findViewById<android.view.View>(R.id.containerA13Warning)
+        val btnCancel = dialogView.findViewById<android.widget.Button>(R.id.btnCancel)
+        val btnAppInfo = dialogView.findViewById<android.widget.Button>(R.id.btnAppInfo)
+        val btnOpenSettings = dialogView.findViewById<android.widget.Button>(R.id.btnOpenSettings)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            containerA13Warning.visibility = android.view.View.VISIBLE
+            btnAppInfo.visibility = android.view.View.VISIBLE
         }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Enable Accessibility Service")
-            .setMessage(msg)
-            .setPositiveButton("Open Settings") { _, _ ->
-                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
+        val infoDialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
             .show()
+
+        btnCancel.setOnClickListener {
+            infoDialog.dismiss()
+        }
+
+        btnAppInfo.setOnClickListener {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:$packageName")
+            }
+            startActivity(intent)
+            infoDialog.dismiss()
+        }
+
+        btnOpenSettings.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            infoDialog.dismiss()
+        }
     }
 
     // ─── System Permission Helpers ───────────────────────────────────────────

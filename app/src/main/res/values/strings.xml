@@ -4,7 +4,8 @@
     <string name="app_tagline">Guard Your Mind. Purify Your Screen.</string>
 
     <!-- Service -->
-    <string name="service_label">PureShield Blocker</string>
+    <string name="service_label">PureShield</string>
+    <string name="service_description">PureShield needs the Accessibility Service to detect and block distracting short-form videos (like Shorts, Reels, and TikTok) to protect your focus.\n\nPrivacy First: PureShield does NOT collect, store, or share any personal data. It does not have internet access.</string>
     <string name="notification_channel_name">PureShield Active</string>
     <string name="notification_channel_desc">Shows while PureShield is protecting your screen</string>
     <string name="notification_title">PureShield is Active</string>

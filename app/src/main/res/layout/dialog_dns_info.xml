@@ -113,9 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Open Settings"
-            android:textColor="@color/surface"
-            android:backgroundTint="@color/primary"
-            style="@style/Widget.MaterialComponents.Button" />
+            style="@style/PureShield.Button.green" />
 
     </LinearLayout>
 
