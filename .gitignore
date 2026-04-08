@@ -41,3 +41,4 @@ crash.log
 *.log
 *.txt
 format_xml.py
+release/

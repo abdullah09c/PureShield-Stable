@@ -4,9 +4,9 @@
   <p><i>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</i></p>
 
   <p>
-    <a href="https://github.com/abdullah09c/PureShield/releases"><img src="https://img.shields.io/github/v/release/abdullah09c/PureShield?style=flat-square&color=00B67A" alt="Latest Release" /></a>
-    <a href="https://android-arsenal.com/api?level=21"><img src="https://img.shields.io/badge/API-21%2B-blue.svg?style=flat-square" alt="API" /></a>
-    <a href="https://github.com/abdullah09c/PureShield/blob/main/LICENSE"><img src="https://img.shields.io/github/license/abdullah09c/PureShield?style=flat-square" alt="License" /></a>
+    <a href="https://github.com/abdullah09c/PureShield-Stable/releases"><img src="https://img.shields.io/github/v/release/abdullah09c/PureShield-Stable?style=flat-square&color=00B67A" alt="Latest Release" /></a>
+    <a href="https://android-arsenal.com/api?level=23"><img src="https://img.shields.io/badge/API-23%2B-blue.svg?style=flat-square" alt="API" /></a>
+    <a href="https://github.com/abdullah09c/PureShield-Stable/blob/main/LICENSE"><img src="https://img.shields.io/github/license/abdullah09c/PureShield-Stable?style=flat-square" alt="License" /></a>
     <img src="https://img.shields.io/badge/Language-Kotlin-7F52FF?style=flat-square&logo=kotlin" alt="Kotlin" />
   </p>
 
@@ -18,12 +18,8 @@
 ## 📌 Table of Contents
 
 - [Features](#-features)
-- [How It Works](#-how-it-works)
 - [Screenshots](#-screenshots)
-- [Installation](#-installation)
 - [Initial Setup](#-initial-setup)
-- [Building from Source](#-building-from-source)
-- [Tech Stack](#-tech-stack)
 - [Privacy Policy](#-privacy-policy)
 - [Contributing](#-contributing)
 - [License](#-license)
@@ -40,16 +36,12 @@
 - **Safe Internet (Private DNS)**: Easily apply community-trusted DNS filters to block adult material network-wide. Defaults include:
   - CleanBrowsing (Family/Adult filters)
   - Cloudflare Family
-  - Google SafeDNS
 - **Uninstall Protection**: PIN-protected Device Admin prevents impulsive removal of the app when you are most vulnerable to relapse.
 - **Start on Boot**: Automatically and silently initiates protection when your phone turns on.
 - **Customizable Reminder Messages**: Personalize the block screen with custom text, Ayahs, or reminders to stay grounded.
 - **Persistent Notification**: Low priority persistent notification to keep the accessibility service alive and reliable.
+- **No Ads**: Fully ad-free experience with no banner ads, popups, or ad tracking.
 - **100% Private & Open Source**: Zero trackers, absolutely no internet permission requested. Your data never leaves your device.
-
-## 🛠️ How It Works
-
-PureShield utilizes Android's **Accessibility Service** to read the active window content and view hierarchies. By doing so, it can precisely pinpoint when you navigate to addictive screens (like the "Reels" tab on Instagram or "Shorts" on YouTube) and automatically draw an overlay over it, showing your predefined reminder and redirecting you out of the loop.
 
 ## 📸 Screenshots
 
@@ -57,15 +49,6 @@ PureShield utilizes Android's **Accessibility Service** to read the active windo
 | :---: | :---: | :---: |
 | <img src="docs/home.jpg" width="220" alt="Home Screen"/> | <img src="docs/setup.jpg" width="220" alt="Setup Screen"/> | <img src="docs/overlay.jpg" width="220" alt="Block Overlay"/> |
 
-*(Note: Don't forget to create a `docs` folder and add your `home.jpg`, `setup.jpg`, and `overlay.jpg` screenshots, or update the paths above!)*
-
-## 📥 Installation
-
-You can download the latest compiled APK from the [Releases section](https://github.com/abdullah09c/PureShield/releases).
-
-1. Download the `PureShield-release.apk` file.
-2. Open the file and allow "Install from Unknown Sources" if prompted.
-3. Once installed, follow the setup guide below.
 
 ## 🚀 Initial Setup
 
@@ -80,26 +63,6 @@ Since PureShield acts as a system-level overlay and accessibility service, it re
    - ⚠️ **Android 13+ Users**: If it says "Restricted Setting", go back to your phone's Settings > Apps > PureShield. Tap the three dots (⋮) in the top right corner and tap **Allow Restricted Settings**. Then try enabling the Accessibility Service again.
 5. Setup your **PIN Code** and enable **Uninstall Protection** (Device Admin) via settings to solidify the barrier.
 
-## 💻 Building from Source
-
-This project is built purely with AndroidX and has no complex third-party dependencies, keeping the build size exceptionally small (~3 MB) and compile times very fast.
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/abdullah09c/PureShield.git
-   ```
-2. Open the cloned directory in **Android Studio**.
-3. Let Gradle sync project files.
-4. Hit **Run** (`Shift + F10`) to compile and deploy to your connected Android device or emulator.
-
-## 🏗️ Tech Stack
-
-- **Language**: Kotlin
-- **UI Toolkit**: XML Layouts, Material Components
-- **Min SDK**: API 21 (Android 5.0) — *Supports 99%+ of active devices*
-- **Target SDK**: API 35 (Android 15)
-- **Architecture**: Minimalist clean architecture, Native SharedPreferences for persistent configuration.
-
 ## 🔒 Privacy Policy
 
 PureShield is built on the philosophy of absolute privacy.
@@ -111,12 +74,8 @@ PureShield is built on the philosophy of absolute privacy.
 
 Contributions are highly welcome! Whether it's finding bugs, adding support for new social media apps, improving the UI, or translating the application, your help is appreciated.
 
-## 👨‍💻 Developer
-
-**Abdullah Al Fuwad**  
-*Noakhali Science and Technology University (NSTU)*  
-GitHub: [@abdullah09c](https://github.com/abdullah09c)
-
 ## 📄 License
 
-This project is licensed under the [GPL-3.0 License](LICENSE) - see the LICENSE file for details. Being Free and Open Source Software (FOSS) ensures the community can vet the code and contribute to its mission.
+This project is licensed under <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL-3.0</a>.
+
+Anyone may use, share, and modify this code under the terms of the GNU GPL v3.
