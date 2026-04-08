@@ -80,18 +80,6 @@
         <item name="subtitleTextColor">#E6FFFFFF</item>
     </style>
 
-    <!-- Numpad button style -->
-    <style name="PinButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:layout_width">80dp</item>
-        <item name="android:layout_height">64dp</item>
-        <item name="android:layout_margin">6dp</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="strokeColor">@color/card_stroke</item>
-        <item name="backgroundTint">@color/surface</item>
-        <item name="cornerRadius">16dp</item>
-    </style>
-
     <!-- Popup dialogs: keep dark surface + readable text for this theme -->
     <style name="PureShield.AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="backgroundTint">@color/surface</item>

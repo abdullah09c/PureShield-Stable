@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/Language-Kotlin-7F52FF?style=flat-square&logo=kotlin" alt="Kotlin" />
   </p>
 
-  <p>A minimal, lightweight, and privacy-respecting Android application designed to block addictive short-form content (Reels & Shorts) and filter adult content using Private DNS — built with an Islamic theme.</p>
+  <p>A lightweight, privacy-respecting Android Application focused on digital wellbeing: blocking short-form content (Reels/Shorts) and filtering harmful web content, all without collecting any data</p>
 </div>
 
 ---
@@ -65,10 +65,11 @@ Since PureShield acts as a system-level overlay and accessibility service, it re
 
 ## 🔒 Privacy Policy
 
-PureShield is built on the philosophy of absolute privacy.
-- The app explicitly **does not request the `INTERNET` permission** in its manifest.
-- The Accessibility Service runs completely locally and never logs your screen contents.
-- No analytics, telemetry, or crash reporting SDKs are bundled.
+PureShield is designed to stay on-device and keep user data local.
+- The app does not request the `INTERNET` permission.
+- Accessibility processing stays on-device and is used only for the user-enabled blocking flow.
+- No analytics, telemetry, crash reporting, or cloud-sync SDKs are bundled.
+- Optional Device Admin, boot, notification, battery-optimization, and Private DNS features are all user-triggered system behaviors.
 
 ## 🤝 Contributing
 

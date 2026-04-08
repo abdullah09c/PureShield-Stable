@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <accessibility-service
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeViewScrolled"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityFlags="flagDefault|flagIncludeNotImportantViews|flagReportViewIds"
     android:canRetrieveWindowContent="true"
     android:description="@string/service_description"
+    android:isAccessibilityTool="false"
     android:notificationTimeout="100"
     android:packageNames="com.google.android.youtube,app.revanced.android.youtube,com.facebook.katana,com.facebook.lite,com.instagram.android,com.zhiliaoapp.musically,com.ss.android.ugc.trill,com.ss.android.ugc.aweme,com.zhiliaoapp.musically.go,com.tiktok.lite.go,com.ss.android.ugc.trill.go"
-    android:settingsActivity=".ui.BlockerSettingsActivity"
-    tools:ignore="AccessibilityServiceApi" />
+    android:settingsActivity=".ui.BlockerSettingsActivity" />

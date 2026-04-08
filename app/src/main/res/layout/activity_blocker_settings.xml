@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -67,13 +66,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="12dp"
+                            android:contentDescription="TODO"
                             android:src="@drawable/ic_youtubeshorts" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="YouTube Shorts"
+                            android:text="@string/label_youtube_shorts"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -102,13 +102,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="12dp"
+                            android:contentDescription="TODO"
                             android:src="@drawable/ic_facebook" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Facebook Reels"
+                            android:text="@string/label_facebook_reels"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -137,13 +138,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="12dp"
+                            android:contentDescription="TODO"
                             android:src="@drawable/ic_fblite" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Facebook Lite Reels"
+                            android:text="@string/label_fblite_reels"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -172,13 +174,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="12dp"
+                            android:contentDescription="TODO"
                             android:src="@drawable/ic_instagram" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Instagram (Full App)"
+                            android:text="@string/label_instagram_reels"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -207,13 +210,14 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_marginEnd="12dp"
+                            android:contentDescription="TODO"
                             android:src="@drawable/ic_tiktok" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="TikTok (Full App)"
+                            android:text="@string/label_tiktok"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
 
@@ -261,6 +265,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/label_block_message"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Shown when content is blocked. Can include an Ayah or reminder."
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
@@ -302,7 +315,7 @@
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:text="Save Settings"
+                android:text="@string/save"
                 android:backgroundTint="@color/green"
                 android:textColor="@color/background"
                 app:cornerRadius="12dp"

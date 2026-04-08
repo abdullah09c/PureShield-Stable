@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     android:fillViewport="true">
 
     <LinearLayout
@@ -26,6 +24,7 @@
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:contentDescription="TODO"
                 android:src="@mipmap/ic_launcher" />
 
             <TextView
@@ -145,7 +144,7 @@
                         android:id="@+id/btnBlockerSettings"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
-                        android:text="Customize"
+                        android:text="@string/btn_configure"
                         style="@style/PureShield.Button.Outline"
                         android:layout_marginTop="12dp"
                         android:textSize="12sp"
@@ -215,79 +214,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/card_dns_desc"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary"
-                        android:layout_marginTop="8dp" />
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Section: Security -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SECURITY"
-                style="@style/PureShield.SectionTitle"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="4dp" />
-
-            <!-- ── Uninstall Protection Card ── -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/PureShield.Card"
-                android:layout_marginBottom="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/card_protection_title"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary" />
-
-                            <TextView
-                                android:id="@+id/tvProtectionStatus"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/status_inactive"
-                                android:textSize="12sp"
-                                android:textColor="@color/inactive_gray"
-                                android:layout_marginTop="2dp" />
-
-                        </LinearLayout>
-
-                        <com.google.android.material.switchmaterial.SwitchMaterial
-                            android:id="@+id/switchProtection"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            style="@style/PureShield.Switch" />
-
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/card_protection_desc"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginTop="8dp" />
