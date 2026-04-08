@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -54,10 +53,11 @@
                         android:id="@+id/btnRate"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:text="⭐  Rate on Play Store"
+                        android:text="@string/feedback_rate"
                         android:textAlignment="textStart"
                         android:gravity="start|center_vertical"
                         android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
@@ -70,10 +70,11 @@
                         android:id="@+id/btnBug"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:text="🐛  Report a Bug"
+                        android:text="@string/feedback_bug"
                         android:textAlignment="textStart"
                         android:gravity="start|center_vertical"
                         android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
@@ -86,10 +87,11 @@
                         android:id="@+id/btnFeature"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:text="💡  Suggest a Feature"
+                        android:text="@string/feedback_feature"
                         android:textAlignment="textStart"
                         android:gravity="start|center_vertical"
                         android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
@@ -102,10 +104,11 @@
                         android:id="@+id/btnEmail"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:text="📧  Email Developer"
+                        android:text="@string/feedback_email"
                         android:textAlignment="textStart"
                         android:gravity="start|center_vertical"
                         android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:textColor="@color/text_primary"
                         android:textSize="14sp" />
@@ -133,6 +136,15 @@
                 android:textAlignment="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="6dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="O Allah, Grant us success in doing what You love and what pleases You."
+                android:textSize="11sp"
+                android:textColor="@color/text_hint"
+                android:textAlignment="center"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp" />
 
         </LinearLayout>
     </ScrollView>

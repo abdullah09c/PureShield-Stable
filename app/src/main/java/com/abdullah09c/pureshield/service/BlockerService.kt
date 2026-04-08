@@ -21,7 +21,6 @@ import com.abdullah09c.pureshield.ui.OverlayActivity
 import com.abdullah09c.pureshield.util.BlockTargets
 import com.abdullah09c.pureshield.util.Prefs
 
-@android.annotation.SuppressLint("AccessibilityServiceApi", "AccessibilityPolicy")
 class BlockerService : AccessibilityService() {
 
     companion object {
@@ -65,7 +64,7 @@ class BlockerService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         isRunning = true
-        if (Prefs.isBlockerEnabled(this)) {
+        if (Prefs.isBlockerEnabled(this) && Prefs.hasAccessibilityConsent(this)) {
             startForegroundNotification()
         }
     }
@@ -114,7 +113,7 @@ class BlockerService : AccessibilityService() {
         if ((event.eventType and TARGET_EVENT_MASK) == 0) return
 
         // Only act when blocker is enabled
-        if (!Prefs.isBlockerEnabled(this)) {
+        if (!Prefs.isBlockerEnabled(this) || !Prefs.hasAccessibilityConsent(this)) {
             if (isForegroundShown) stopForegroundCompat()
             return
         }

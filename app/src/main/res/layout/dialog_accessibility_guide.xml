@@ -2,8 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/surface">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +15,7 @@
         android:id="@+id/tvGuideTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enable Protection"
+        android:text="@string/accessibility_required"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/text_primary"
@@ -25,7 +24,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="PureShield needs Accessibility Service to monitor and block distracting content."
+        android:text="@string/accessibility_disclosure_msg"
         android:textSize="14sp"
         android:textColor="@color/text_secondary"
         android:layout_marginBottom="16dp" />
@@ -72,7 +71,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="HOW TO ENABLE"
+        android:text="@string/enable_accessibility"
         android:textSize="12sp"
         android:textColor="@color/green"
         android:textStyle="bold"
@@ -99,7 +98,7 @@
             android:id="@+id/btnOpenSettings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open Settings"
+            android:text="@string/enable_accessibility"
             style="@style/PureShield.Button.green"
             android:layout_marginBottom="8dp" />
 
@@ -116,7 +115,7 @@
             android:id="@+id/btnCancel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/cancel"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:textColor="@color/text_secondary" />
         </LinearLayout>

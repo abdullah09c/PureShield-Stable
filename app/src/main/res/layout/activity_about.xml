@@ -2,8 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -26,13 +25,14 @@
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:contentDescription="TODO"
                 android:src="@mipmap/ic_launcher"
                 android:layout_marginTop="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PureShield"
+                android:text="@string/app_name"
                 android:textSize="26sp"
                 android:textStyle="bold"
                 android:textColor="@color/green"
@@ -42,7 +42,7 @@
                 android:id="@+id/tvVersion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Version 1.2.0"
+                android:text="@string/about_version"
                 android:textSize="13sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp" />
@@ -95,19 +95,19 @@
                     android:padding="16dp">
 
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🔒  No internet permission" android:textColor="@color/active_green"
+                        android:text="@string/about_no_internet" android:textColor="@color/active_green"
                         android:textSize="13sp" android:layout_marginBottom="8dp" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🚫  No data collected" android:textColor="@color/active_green"
+                        android:text="@string/about_no_data" android:textColor="@color/active_green"
                         android:textSize="13sp" android:layout_marginBottom="8dp" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="🚫  No ads in app" android:textColor="@color/active_green"
+                        android:text="@string/about_no_ads" android:textColor="@color/active_green"
                         android:textSize="13sp" android:layout_marginBottom="8dp" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="✅  100% free &amp; open source" android:textColor="@color/active_green"
+                        android:text="@string/about_free" android:textColor="@color/active_green"
                         android:textSize="13sp" android:layout_marginBottom="8dp" />
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                        android:text="📱  Everything stays on your device" android:textColor="@color/active_green"
+                        android:text="@string/about_privacy" android:textColor="@color/active_green"
                         android:textSize="13sp" />
                     
 
@@ -139,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
-                        android:text="Abdullah Al Fuwad"
+                        android:text="@string/about_developer"
                         android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -148,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
-                        android:text="Noakhali Science and Technology University"
+                        android:text="Innovating Beyond Limits in Software &amp; Technology"
                         android:textAlignment="center"
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
@@ -157,7 +157,7 @@
                         android:id="@+id/btnGithub"
                         android:layout_width="wrap_content"
                         android:layout_height="44dp"
-                        android:text="🔗  github.com/abdullah09c"
+                        android:text="@string/about_website"
                         style="@style/PureShield.Button.Outline"
                         android:textSize="12sp" />
 
@@ -166,7 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="44dp"
                         android:layout_marginTop="10dp"
-                        android:text="🔒  Privacy Policy"
+                        android:text="@string/about_privacy_policy"
                         style="@style/PureShield.Button.Outline"
                         android:textSize="12sp" />
 
@@ -177,7 +177,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Licensed under GPL-3.0"
+                android:text="@string/about_license"
                 android:textSize="11sp"
                 android:textColor="@color/text_hint"
                 android:layout_marginBottom="8dp" />

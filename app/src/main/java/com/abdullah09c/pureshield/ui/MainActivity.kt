@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         binding.tvDnsStatus.text = if (preset == DnsPreset.NONE)
             getString(R.string.status_inactive)
         else
-            preset.displayName
+            preset.displayName(this)
         binding.tvDnsStatus.setTextColor(
             if (preset == DnsPreset.NONE) getColor(R.color.inactive_gray)
             else getColor(R.color.active_green)
@@ -86,9 +86,10 @@ class MainActivity : AppCompatActivity() {
                 if (!isAccessibilityServiceEnabled()) {
                     binding.switchBlocker.isChecked = false
                     showAccessibilityDialog()
-                } else {
+                } else if (!Prefs.hasAccessibilityConsent(this)) {
                     showAccessibilityDisclosureDialog(
                         onAccept = {
+                            Prefs.setAccessibilityConsentAccepted(this, true)
                             Prefs.setBlockerEnabled(this, true)
                             syncBlockerServiceNotification()
                             updateBlockerCard()
@@ -97,6 +98,10 @@ class MainActivity : AppCompatActivity() {
                             binding.switchBlocker.isChecked = false
                         }
                     )
+                } else {
+                    Prefs.setBlockerEnabled(this, true)
+                    syncBlockerServiceNotification()
+                    updateBlockerCard()
                 }
             } else {
                 Prefs.setBlockerEnabled(this, false)
@@ -144,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val presets = DnsHelper.getAllPresets()
-        val names = presets.map { it.displayName }.toTypedArray()
+        val names = presets.map { it.displayName(this) }.toTypedArray()
         val currentPreset = Prefs.getDnsPreset(this)
         val currentIndex = presets.indexOfFirst { it.name == currentPreset }.coerceAtLeast(0)
 
@@ -164,7 +169,7 @@ class MainActivity : AppCompatActivity() {
                     val btnCopy = dialogView.findViewById<android.widget.Button>(R.id.btnCopy)
                     val btnOpenSettings = dialogView.findViewById<android.widget.Button>(R.id.btnOpenSettings)
 
-                    tvDnsTitle.text = selected.displayName
+                    tvDnsTitle.text = selected.displayName(this)
                     tvDnsAddress.text = selected.address
 
                     selected.features.forEach { feature ->
@@ -264,22 +269,20 @@ class MainActivity : AppCompatActivity() {
     // ─── System Permission Helpers ───────────────────────────────────────────
 
     private fun showBatteryOptimizationInfo() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val pm = getSystemService(android.os.PowerManager::class.java)
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                MaterialAlertDialogBuilder(this)
-                    .setTitle(getString(R.string.battery_opt_title))
-                    .setMessage(getString(R.string.battery_opt_msg))
-                    .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
-                        val intent = Intent(
-                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                            Uri.parse("package:$packageName")
-                        )
-                        startActivity(intent)
-                    }
-                    .setNegativeButton(getString(R.string.later), null)
-                    .show()
-            }
+        val pm = getSystemService(android.os.PowerManager::class.java)
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle(getString(R.string.battery_opt_title))
+                .setMessage(getString(R.string.battery_opt_msg))
+                .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
+                    val intent = Intent(
+                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                        Uri.parse("package:$packageName")
+                    )
+                    startActivity(intent)
+                }
+                .setNegativeButton(getString(R.string.later), null)
+                .show()
         }
     }
 

@@ -2,6 +2,8 @@ package com.abdullah09c.pureshield.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.annotation.StringRes
+import com.abdullah09c.pureshield.R
 
 object Prefs {
 
@@ -17,6 +19,7 @@ object Prefs {
     const val KEY_BLOCK_MESSAGE = "block_message"
     const val KEY_DNS_PRESET = "dns_preset"
     const val KEY_START_ON_BOOT = "start_on_boot"
+    const val KEY_ACCESSIBILITY_CONSENT_ACCEPTED = "accessibility_consent_accepted"
 
     private fun prefs(ctx: Context): SharedPreferences =
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
@@ -50,12 +53,18 @@ object Prefs {
 
     fun isStartOnBoot(ctx: Context) = prefs(ctx).getBoolean(KEY_START_ON_BOOT, true)
     fun setStartOnBoot(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_START_ON_BOOT, v).apply()
+
+    fun hasAccessibilityConsent(ctx: Context) =
+        prefs(ctx).getBoolean(KEY_ACCESSIBILITY_CONSENT_ACCEPTED, false)
+
+    fun setAccessibilityConsentAccepted(ctx: Context, v: Boolean) =
+        prefs(ctx).edit().putBoolean(KEY_ACCESSIBILITY_CONSENT_ACCEPTED, v).apply()
 }
 
-enum class DnsPreset(val displayName: String, val address: String, val features: List<String>) {
-    NONE("None (Disabled)", "", listOf()),
+enum class DnsPreset(@StringRes val displayNameRes: Int, val address: String, val features: List<String>) {
+    NONE(R.string.dns_none, "", listOf()),
     
-    CLEANBROWSING_FAMILY("CleanBrowsing Family", "family-filter-dns.cleanbrowsing.org", listOf(
+    CLEANBROWSING_FAMILY(R.string.dns_cleanbrowsing_family, "family-filter-dns.cleanbrowsing.org", listOf(
         "Blocks Adult Content",
         "Blocks Proxies & VPNs",
         "Blocks Mixed Content (e.g. Reddit)",
@@ -63,7 +72,7 @@ enum class DnsPreset(val displayName: String, val address: String, val features:
         "Forces SafeSearch"
     )),
     
-    CLEANBROWSING_ADULT("CleanBrowsing Adult", "adult-filter-dns.cleanbrowsing.org", listOf(
+    CLEANBROWSING_ADULT(R.string.dns_cleanbrowsing_adult, "adult-filter-dns.cleanbrowsing.org", listOf(
         "Blocks Adult Content",
         "Blocks Malware & Phishing",
         "Forces SafeSearch",
@@ -71,21 +80,35 @@ enum class DnsPreset(val displayName: String, val address: String, val features:
         "Allows Mixed Content (e.g. Reddit)"
     )),
 
-    CLEANBROWSING_SECURITY("CleanBrowsing Security", "security-filter-dns.cleanbrowsing.org", listOf(
+    CLEANBROWSING_SECURITY(R.string.dns_cleanbrowsing_security, "security-filter-dns.cleanbrowsing.org", listOf(
         "Blocks Malware, Phishing & Spam",
         "Updated Hourly",
         "Allows Adult Content"
     )),
     
-    CLOUDFLARE_FAMILY("Cloudflare Family", "family.cloudflare-dns.com", listOf(
+    CLOUDFLARE_FAMILY(R.string.dns_cloudflare_family, "family.cloudflare-dns.com", listOf(
         "Blocks Adult Content",
         "Blocks Malware",
         "High Speed DNS"
     )),
 
-    CLOUDFLARE_SECURITY("Cloudflare Security", "security.cloudflare-dns.com", listOf(
+    CLOUDFLARE_DEFAULT(R.string.dns_cloudflare_default, "one.one.one.one", listOf(
         "Blocks Malware",
         "High Speed DNS",
         "Allows Adult Content"
-    ))
+    )),
+
+    GOOGLE_SAFE(R.string.dns_google, "family-dns.google", listOf(
+        "Blocks Adult Content",
+        "High Speed DNS",
+        "Supports SafeSearch"
+    )),
+
+    CLOUDFLARE_SECURITY(R.string.dns_cloudflare_security, "security.cloudflare-dns.com", listOf(
+        "Blocks Malware",
+        "High Speed DNS",
+        "Allows Adult Content"
+    ));
+
+    fun displayName(context: Context): String = context.getString(displayNameRes)
 }
