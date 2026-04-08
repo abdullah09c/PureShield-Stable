@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PureShield</string>
+    <string name="app_tagline">Guard Your Mind. Purify Your Screen.</string>
+
+    <!-- Service -->
+    <string name="service_label">PureShield</string>
+    <string name="service_description">PureShield uses Accessibility Service only to detect supported distraction screens (like Shorts, Reels, and TikTok) and block them locally on your device.\n\nPrivacy First: PureShield does NOT collect, store, or share personal data, and it does not have internet access.</string>
+    <string name="notification_channel_name">PureShield Active</string>
+    <string name="notification_channel_desc">Shows while PureShield is protecting your screen</string>
+    <string name="notification_title">PureShield is Active</string>
+    <string name="notification_text">Guarding your screen from distractions</string>
+    <string name="notification_action_stop">Stop</string>
+
+    <!-- Titles -->
+    <string name="title_blocker_settings">Reels Blocker Settings</string>
+    <string name="title_about">About PureShield</string>
+    <string name="title_feedback">Feedback</string>
+    <string name="title_pin">Uninstall Protection</string>
+    <string name="title_dns">Safe Internet</string>
+    <string name="accessibility_disclosure_title">Enable Accessibility Control</string>
+    <string name="accessibility_disclosure_msg">PureShield needs Accessibility Service to detect the active screen inside supported apps and block the short-form feeds you selected. It works locally on your device and does not send your screen data anywhere.</string>
+    <string name="device_admin_disclosure_title">Enable Uninstall Protection</string>
+    <string name="device_admin_disclosure_msg">PureShield uses Device Admin only to prevent impulsive uninstallation from this device. You can still disable it later with your PIN.</string>
+
+    <!-- Home Screen -->
+    <string name="card_blocker_title">Reels &amp; Shorts Blocker</string>
+    <string name="card_blocker_desc">Block short videos on YouTube, Facebook, Instagram &amp; TikTok</string>
+    <string name="card_dns_title">Safe Internet</string>
+    <string name="card_dns_desc">Filter adult content with private DNS</string>
+    <string name="card_protection_title">Uninstall Protection</string>
+    <string name="card_protection_desc">Prevent impulsive uninstallation with a PIN</string>
+    <string name="btn_settings">Settings</string>
+    <string name="btn_configure">Configure</string>
+    <string name="btn_enable">Enable</string>
+    <string name="btn_disable">Disable</string>
+
+    <!-- Blocker Settings -->
+    <string name="label_youtube_shorts">YouTube Shorts</string>
+    <string name="label_facebook_reels">Facebook Reels</string>
+    <string name="label_fblite_reels">Facebook Lite Reels</string>
+    <string name="label_instagram_reels">Instagram (Full App)</string>
+    <string name="label_tiktok">TikTok (Full App)</string>
+    <string name="label_block_message">Custom Block Message</string>
+    <string name="hint_block_message">Enter your motivational reminder…</string>
+    <string name="default_block_message">وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا\n\nStay Focused. Guard Your Time.</string>
+    <string name="accessibility_required">Accessibility permission is required</string>
+    <string name="enable_accessibility">Enable in Accessibility Settings</string>
+
+    <!-- Overlay Screen -->
+    <string name="overlay_title">Stay Focused</string>
+    <string name="overlay_subtitle">This content is blocked</string>
+    <string name="btn_go_back">Go Back</string>
+
+    <!-- DNS -->
+    <string name="dns_title">Choose Safe DNS</string>
+    <string name="dns_none">None (Disabled)</string>
+    <string name="dns_cleanbrowsing_family">CleanBrowsing Family Filter</string>
+    <string name="dns_cleanbrowsing_adult">CleanBrowsing Adult Filter</string>
+    <string name="dns_cloudflare_family">Cloudflare Family (1.1.1.3)</string>
+    <string name="dns_cloudflare_default">Cloudflare Default (1.1.1.1)</string>
+    <string name="dns_google">Google Safe DNS</string>
+    <string name="dns_apply">Apply (Opens System Settings)</string>
+    <string name="dns_android9_warning">Private DNS requires Android 9 or above. Please set DNS manually in your WiFi settings.</string>
+
+    <!-- PIN -->
+    <string name="pin_setup_title">Set Protection PIN</string>
+    <string name="pin_enter_title">Enter PIN to Disable</string>
+    <string name="pin_confirm">Confirm PIN</string>
+    <string name="pin_wrong">Incorrect PIN. Try again.</string>
+    <string name="pin_set_success">Protection enabled!</string>
+    <string name="pin_hint">Enter 4-digit PIN</string>
+    <string name="continue_label">Continue</string>
+
+    <!-- About -->
+    <string name="about_version">Version 1.1.1</string>
+    <string name="about_developer">Abdullah Al Fuwad</string>
+    <string name="about_github">github.com/abdullah09c</string>
+    <string name="about_github_url">https://github.com/abdullah09c</string>
+    <string name="privacy_policy_url">https://github.com/abdullah09c/PureShield/blob/main/PRIVACY_POLICY.md</string>
+    <string name="about_description">PureShield was built with the intention of helping Muslims and everyone build healthier screen habits — blocking short-form content and filtering harmful web content, all without collecting any data.</string>
+    <string name="about_no_internet">No internet permission</string>
+    <string name="about_no_data">No data collected</string>
+    <string name="about_free">100%% free &amp; open source</string>
+    <string name="about_privacy">Everything stays on your device</string>
+    <string name="about_open_source">View Source Code</string>
+    <string name="about_license">Licensed under GPL-3.0</string>
+
+    <!-- Feedback -->
+    <string name="feedback_rate">⭐ Rate on Play Store</string>
+    <string name="feedback_bug">🐛 Report a Bug</string>
+    <string name="feedback_feature">💡 Suggest a Feature</string>
+    <string name="feedback_email">📧 Email Developer</string>
+    <string name="feedback_github_issues">https://github.com/abdullah09c/pureshield/issues</string>
+    <string name="feedback_email_address">mailto:abdullah0117@student.nstu.edu.bd</string>
+
+    <!-- General -->
+    <string name="status_active">Active</string>
+    <string name="status_inactive">Inactive</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+    <string name="boot_start_label">Start on Boot</string>
+    <string name="battery_opt_title">Disable Battery Optimization</string>
+    <string name="battery_opt_msg">Battery optimization can reduce how quickly PureShield responds in the background. You can open system settings and choose whether to exempt it.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="later">Later</string>
+    <string name="unable_open_link">Unable to open link</string>
+</resources>

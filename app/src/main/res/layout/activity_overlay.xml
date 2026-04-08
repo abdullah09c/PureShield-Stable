@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/background"
+    android:padding="32dp">
+
+    <!-- green top line -->
+    <View
+        android:layout_width="80dp"
+        android:layout_height="2dp"
+        android:background="@color/green"
+        android:layout_marginBottom="32dp" />
+
+    <!-- App icon -->
+    <ImageView
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginBottom="16dp" />
+
+    <!-- App name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PureShield"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/green"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Divider star -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="✦"
+        android:textSize="16sp"
+        android:textColor="@color/green_dark"
+        android:layout_marginBottom="24dp" />
+
+    <!-- User's custom message (Ayah / reminder) -->
+    <TextView
+        android:id="@+id/tvBlockMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/text_primary"
+        android:textAlignment="center"
+        android:lineSpacingMultiplier="1.6"
+        android:fontFamily="serif"
+        android:layout_marginBottom="40dp" />
+
+    <!-- green decorative line -->
+    <View
+        android:layout_width="60dp"
+        android:layout_height="1dp"
+        android:background="@color/card_stroke"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Go Back button -->
+    <Button
+        android:id="@+id/btnGoBack"
+        android:layout_width="200dp"
+        android:layout_height="52dp"
+        android:text="@string/btn_go_back"
+        style="@style/PureShield.Button.green"
+        android:textSize="15sp" />
+
+    <!-- Bottom green line -->
+    <View
+        android:layout_width="80dp"
+        android:layout_height="2dp"
+        android:background="@color/green"
+        android:layout_marginTop="32dp" />
+
+</LinearLayout>

@@ -1,0 +1,44 @@
+# Gradle and Build folders
+.gradle/
+/build/
+app/build/
+
+# IDE Configuration
+.idea/
+*.iml
+*.iws
+.kotlin/
+
+# Local SDK configuration (Do not track)
+local.properties
+
+# Signing and Keystores (Do not track sensitive signing data)
+*.jks
+*.keystore
+keystore.properties
+
+# Application Packages
+*.apk
+*.ap_
+*.aab
+
+# Native build folders
+.externalNativeBuild/
+.cxx/
+
+# OS-specific
+.DS_Store
+
+# Logs and debugging
+*.log
+crash.log
+/captures/
+
+# Custom app outputs
+app/dump_formatted.xml
+app/window_dump.xml
+crash.log
+*.log
+*.txt
+format_xml.py
+release/

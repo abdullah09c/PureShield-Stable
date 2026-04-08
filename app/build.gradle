@@ -1,0 +1,58 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Compatibility shim for IDEs/tools that still query this legacy Kotlin sync task.
+tasks.register("prepareKotlinBuildScriptModel")
+
+android {
+    namespace 'com.abdullah09c.pureshield'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.abdullah09c.pureshield"
+        minSdk 23
+        targetSdk 36
+        versionCode 5
+        versionName "1.1.1"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
+}
+
+dependencies {
+    // Pure AndroidX only - no third party libs - keeps APK tiny
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.activity:activity-ktx:1.8.2'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+}
+
+def toolchainService = extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService)
+tasks.withType(JavaCompile).configureEach {
+    javaCompiler = toolchainService.compilerFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}

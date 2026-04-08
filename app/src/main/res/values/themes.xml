@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.PureShield" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorSecondaryVariant">@color/secondary_variant</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnPrimary">@color/text_primary</item>
+        <item name="colorOnSecondary">@color/text_primary</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:statusBarColor">@color/primary_variant</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="alertDialogTheme">@style/PureShield.AlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/PureShield.AlertDialog</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Theme.PureShield.Overlay" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <!-- Base style for dot-notation inheritance -->
+    <style name="PureShield" />
+
+    <!-- Card Style -->
+    <style name="PureShield.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <!-- green Button -->
+    <style name="PureShield.Button.green" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/green</item>
+        <item name="android:textColor">@color/background</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Outline Button -->
+    <style name="PureShield.Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/green</item>
+        <item name="android:textColor">@color/green</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- Switch Style -->
+    <style name="PureShield.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/switch_thumb_selector</item>
+        <item name="trackTint">@color/switch_track_selector</item>
+    </style>
+
+    <!-- Section Title -->
+    <style name="PureShield.SectionTitle">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/green</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Toolbar -->
+    <style name="PureShield.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/primary_variant</item>
+        <item name="titleTextColor">#FFFFFF</item>
+        <item name="subtitleTextColor">#E6FFFFFF</item>
+    </style>
+
+    <!-- Numpad button style -->
+    <style name="PinButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="strokeColor">@color/card_stroke</item>
+        <item name="backgroundTint">@color/surface</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+
+    <!-- Popup dialogs: keep dark surface + readable text for this theme -->
+    <style name="PureShield.AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="backgroundTint">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PureShield.AlertDialog.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/PureShield.AlertDialog.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/PureShield.AlertDialog.Button</item>
+    </style>
+
+    <style name="PureShield.AlertDialog.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+</resources>
