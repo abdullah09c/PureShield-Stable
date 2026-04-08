@@ -38,7 +38,7 @@
     <string name="label_tiktok">TikTok (Full App)</string>
     <string name="label_block_message">Custom Block Message</string>
     <string name="hint_block_message">Enter your motivational reminder…</string>
-    <string name="default_block_message">وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا\n\nStay Focused. Guard Your Time.</string>
+    <string name="default_block_message">وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا\n\nSurah Ar-Talaq (65:2)\n\nStay Focused. Guard Your Time.</string>
     <string name="accessibility_required">Accessibility permission is required</string>
     <string name="enable_accessibility">Enable in Accessibility Settings</string>
 
@@ -61,7 +61,7 @@
     <string name="continue_label">Continue</string>
 
     <!-- About -->
-    <string name="about_version">Version 1.1.1</string>
+    <string name="about_version">Version 1.2.0</string>
     <string name="about_developer">Abdullah Al Fuwad</string>
     <string name="about_github">github.com/abdullah09c</string>
     <string name="about_github_url">https://github.com/abdullah09c</string>
