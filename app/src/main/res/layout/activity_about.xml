@@ -181,7 +181,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Accessibility and Device Admin are used only for user-enabled blocking and uninstall protection on this device."
+                android:text="Accessibility is used only for user-enabled blocking on this device."
                 android:textSize="11sp"
                 android:textAlignment="center"
                 android:textColor="@color/text_hint"

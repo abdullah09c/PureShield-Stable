@@ -10,7 +10,7 @@
     <img src="https://img.shields.io/badge/Language-Kotlin-7F52FF?style=flat-square&logo=kotlin" alt="Kotlin" />
   </p>
 
-  <p>A minimal, lightweight, and privacy-respecting Android application designed to block addictive short-form content (Reels & Shorts) and filter adult content using Private DNS — built with an Islamic theme.</p>
+  <p>A lightweight, privacy-respecting Android Application focused on digital wellbeing: blocking short-form content (Reels/Shorts) and filtering harmful web content, all without collecting any data</p>
 </div>
 
 ---

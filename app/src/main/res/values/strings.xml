@@ -16,20 +16,15 @@
     <string name="title_blocker_settings">Reels Blocker Settings</string>
     <string name="title_about">About PureShield</string>
     <string name="title_feedback">Feedback</string>
-    <string name="title_pin">Uninstall Protection</string>
     <string name="title_dns">Safe Internet</string>
     <string name="accessibility_disclosure_title">Enable Accessibility Control</string>
     <string name="accessibility_disclosure_msg">PureShield needs Accessibility Service to detect the active screen inside supported apps and block the short-form feeds you selected. It works locally on your device and does not send your screen data anywhere.</string>
-    <string name="device_admin_disclosure_title">Enable Uninstall Protection</string>
-    <string name="device_admin_disclosure_msg">PureShield uses Device Admin only to prevent impulsive uninstallation from this device. You can still disable it later with your PIN.</string>
 
     <!-- Home Screen -->
     <string name="card_blocker_title">Reels &amp; Shorts Blocker</string>
     <string name="card_blocker_desc">Block short videos on YouTube, Facebook, Instagram &amp; TikTok</string>
     <string name="card_dns_title">Safe Internet</string>
     <string name="card_dns_desc">Filter adult content with private DNS</string>
-    <string name="card_protection_title">Uninstall Protection</string>
-    <string name="card_protection_desc">Prevent impulsive uninstallation with a PIN</string>
     <string name="btn_settings">Settings</string>
     <string name="btn_configure">Configure</string>
     <string name="btn_enable">Enable</string>
@@ -63,13 +58,6 @@
     <string name="dns_apply">Apply (Opens System Settings)</string>
     <string name="dns_android9_warning">Private DNS requires Android 9 or above. Please set DNS manually in your WiFi settings.</string>
 
-    <!-- PIN -->
-    <string name="pin_setup_title">Set Protection PIN</string>
-    <string name="pin_enter_title">Enter PIN to Disable</string>
-    <string name="pin_confirm">Confirm PIN</string>
-    <string name="pin_wrong">Incorrect PIN. Try again.</string>
-    <string name="pin_set_success">Protection enabled!</string>
-    <string name="pin_hint">Enter 4-digit PIN</string>
     <string name="continue_label">Continue</string>
 
     <!-- About -->
@@ -78,7 +66,7 @@
     <string name="about_github">github.com/abdullah09c</string>
     <string name="about_github_url">https://github.com/abdullah09c</string>
     <string name="privacy_policy_url">https://github.com/abdullah09c/PureShield/blob/main/PRIVACY_POLICY.md</string>
-    <string name="about_description">PureShield was built with the intention of helping Muslims and everyone build healthier screen habits — blocking short-form content and filtering harmful web content, all without collecting any data.</string>
+    <string name="about_description">PureShield was built with the intention of helping Muslims and everyone  focused on digital wellbeing: blocking short-form content (Reels/Shorts) and filtering harmful web content, all without collecting any data.</string>
     <string name="about_no_internet">No internet permission</string>
     <string name="about_no_data">No data collected</string>
     <string name="about_free">100%% free &amp; open source</string>
@@ -104,8 +92,8 @@
     <string name="disabled">Disabled</string>
     <string name="boot_start_label">Start on Boot</string>
     <string name="battery_opt_title">Disable Battery Optimization</string>
-    <string name="battery_opt_msg">Battery optimization can reduce how quickly PureShield responds in the background. You can open system settings and choose whether to exempt it.</string>
-    <string name="open_settings">Open Settings</string>
+    <string name="battery_opt_msg">Battery optimization can reduce how quickly PureShield responds in the background. Allow PureShield to be exempted for more reliable protection.</string>
+    <string name="open_settings">Allow</string>
     <string name="later">Later</string>
     <string name="unable_open_link">Unable to open link</string>
 </resources>

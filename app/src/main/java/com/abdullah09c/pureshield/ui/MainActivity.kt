@@ -1,7 +1,5 @@
 package com.abdullah09c.pureshield.ui
 
-import android.app.admin.DevicePolicyManager
-import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -11,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.abdullah09c.pureshield.R
 import com.abdullah09c.pureshield.databinding.ActivityMainBinding
-import com.abdullah09c.pureshield.receiver.AdminReceiver
 import com.abdullah09c.pureshield.service.BlockerService
 import com.abdullah09c.pureshield.util.DnsHelper
 import com.abdullah09c.pureshield.util.DnsPreset
@@ -21,16 +18,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var dpm: DevicePolicyManager
-    private lateinit var adminComponent: ComponentName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        adminComponent = ComponentName(this, AdminReceiver::class.java)
 
         setupClickListeners()
         showBatteryOptimizationInfo()
@@ -47,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private fun updateAllCardStates() {
         updateBlockerCard()
         updateDnsCard()
-        updateProtectionCard()
         updateBootToggle()
     }
 
@@ -78,16 +69,6 @@ class MainActivity : AppCompatActivity() {
         binding.tvDnsStatus.setTextColor(
             if (preset == DnsPreset.NONE) getColor(R.color.inactive_gray)
             else getColor(R.color.active_green)
-        )
-    }
-
-    private fun updateProtectionCard() {
-        val isAdmin = dpm.isAdminActive(adminComponent)
-        binding.switchProtection.isChecked = isAdmin
-        binding.tvProtectionStatus.text = if (isAdmin)
-            getString(R.string.status_active) else getString(R.string.status_inactive)
-        binding.tvProtectionStatus.setTextColor(
-            if (isAdmin) getColor(R.color.active_green) else getColor(R.color.inactive_gray)
         )
     }
 
@@ -132,40 +113,6 @@ class MainActivity : AppCompatActivity() {
         // DNS card
         binding.cardDns.setOnClickListener {
             showDnsPickerDialog()
-        }
-
-        // Protection toggle
-        binding.switchProtection.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                if (!dpm.isAdminActive(adminComponent)) {
-                    showDeviceAdminDisclosureDialog(
-                        onAccept = {
-                            val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                                putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, adminComponent)
-                                putExtra(
-                                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                                    "PureShield uses Device Admin only for uninstall protection on your device."
-                                )
-                            }
-                            startActivity(intent)
-                            binding.switchProtection.isChecked = false
-                        },
-                        onCancel = {
-                            binding.switchProtection.isChecked = false
-                        }
-                    )
-                } else {
-                    // Already admin, just show as active
-                }
-            } else {
-                if (dpm.isAdminActive(adminComponent)) {
-                    // Require PIN to disable
-                    startActivity(Intent(this, PinActivity::class.java).apply {
-                        putExtra(PinActivity.MODE_KEY, PinActivity.MODE_VERIFY)
-                    })
-                    binding.switchProtection.isChecked = true // revert until PIN verified
-                }
-            }
         }
 
         // Boot toggle
@@ -324,7 +271,11 @@ class MainActivity : AppCompatActivity() {
                     .setTitle(getString(R.string.battery_opt_title))
                     .setMessage(getString(R.string.battery_opt_msg))
                     .setPositiveButton(getString(R.string.open_settings)) { _, _ ->
-                        startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                        val intent = Intent(
+                            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                            Uri.parse("package:$packageName")
+                        )
+                        startActivity(intent)
                     }
                     .setNegativeButton(getString(R.string.later), null)
                     .show()
@@ -336,16 +287,6 @@ class MainActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.accessibility_disclosure_title))
             .setMessage(getString(R.string.accessibility_disclosure_msg))
-            .setPositiveButton(getString(R.string.continue_label)) { _, _ -> onAccept() }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> onCancel() }
-            .setOnCancelListener { onCancel() }
-            .show()
-    }
-
-    private fun showDeviceAdminDisclosureDialog(onAccept: () -> Unit, onCancel: () -> Unit) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.device_admin_disclosure_title))
-            .setMessage(getString(R.string.device_admin_disclosure_msg))
             .setPositiveButton(getString(R.string.continue_label)) { _, _ -> onAccept() }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> onCancel() }
             .setOnCancelListener { onCancel() }

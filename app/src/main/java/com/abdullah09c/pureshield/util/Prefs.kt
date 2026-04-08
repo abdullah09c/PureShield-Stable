@@ -16,8 +16,6 @@ object Prefs {
     const val KEY_BLOCK_TIKTOK = "block_tiktok"
     const val KEY_BLOCK_MESSAGE = "block_message"
     const val KEY_DNS_PRESET = "dns_preset"
-    const val KEY_PIN = "protection_pin"
-    const val KEY_PROTECTION_ENABLED = "protection_enabled"
     const val KEY_START_ON_BOOT = "start_on_boot"
 
     private fun prefs(ctx: Context): SharedPreferences =
@@ -49,12 +47,6 @@ object Prefs {
 
     fun getDnsPreset(ctx: Context) = prefs(ctx).getString(KEY_DNS_PRESET, DnsPreset.NONE.name) ?: DnsPreset.NONE.name
     fun setDnsPreset(ctx: Context, v: String) = prefs(ctx).edit().putString(KEY_DNS_PRESET, v).apply()
-
-    fun getPin(ctx: Context): String = prefs(ctx).getString(KEY_PIN, "") ?: ""
-    fun setPin(ctx: Context, v: String) = prefs(ctx).edit().putString(KEY_PIN, v).apply()
-
-    fun isProtectionEnabled(ctx: Context) = prefs(ctx).getBoolean(KEY_PROTECTION_ENABLED, false)
-    fun setProtectionEnabled(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_PROTECTION_ENABLED, v).apply()
 
     fun isStartOnBoot(ctx: Context) = prefs(ctx).getBoolean(KEY_START_ON_BOOT, true)
     fun setStartOnBoot(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_START_ON_BOOT, v).apply()
