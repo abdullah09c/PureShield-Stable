@@ -1,5 +1,6 @@
 # Gradle and Build folders
 .gradle/
+.ai/
 /build/
 app/build/
 

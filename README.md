@@ -1,6 +1,6 @@
 <div align="center">
   <h1>🛡️ PureShield</h1>
-  <p><b>Guard Your Mind. Purify Your Screen.</b></p>
+  <p><b>Stay Focused. Guard Your Time</b></p>
   <p><i>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</i></p>
 
   <p>
@@ -19,8 +19,6 @@
 
 - [Features](#-features)
 - [Screenshots](#-screenshots)
-- [Initial Setup](#-initial-setup)
-- [Privacy Policy](#-privacy-policy)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -33,43 +31,21 @@
   - Facebook Reels & FB Lite Reels
   - Instagram
   - TikTok
+- **Flexible Blocking Behavior**: Choose how strict blocking should be:
+  - **Block Instantly**: Exit as soon as Reels/Shorts is detected.
+  - **Block on Scroll**: Allows the first video, then blocks when you swipe to the next one.
 - **Safe Internet (Private DNS)**: Easily apply community-trusted DNS filters to block adult material network-wide. Defaults include:
   - CleanBrowsing (Family/Adult filters)
   - Cloudflare Family
-- **Uninstall Protection**: PIN-protected Device Admin prevents impulsive removal of the app when you are most vulnerable to relapse.
 - **Start on Boot**: Automatically and silently initiates protection when your phone turns on.
 - **Customizable Reminder Messages**: Personalize the block screen with custom text, Ayahs, or reminders to stay grounded.
-- **Persistent Notification**: Low priority persistent notification to keep the accessibility service alive and reliable.
-- **No Ads**: Fully ad-free experience with no banner ads, popups, or ad tracking.
-- **100% Private & Open Source**: Zero trackers, absolutely no internet permission requested. Your data never leaves your device.
 
 ## 📸 Screenshots
 
 | Home | Blocking Setup | Active Overlay |
 | :---: | :---: | :---: |
-| <img src="docs/home.jpg" width="220" alt="Home Screen"/> | <img src="docs/setup.jpg" width="220" alt="Setup Screen"/> | <img src="docs/overlay.jpg" width="220" alt="Block Overlay"/> |
+| <img src="screenshots/home.png" width="220" alt="Home Screen"/> | <img src="screenshots/customize.jpg" width="220" alt="Customize Screen"/> | <img src="screenshots/overlay.png" width="220" alt="Block Overlay"/> |
 
-
-## 🚀 Initial Setup
-
-Since PureShield acts as a system-level overlay and accessibility service, it requires a few permissions to function reliably.
-
-1. Open **PureShield**.
-2. **Battery Optimization**: Tap the prompt to disable battery optimization. This stops Android from killing the blocking service in the background.
-3. **Notifications (Android 13+)**: Allow notification permission to keep the service running smoothly.
-4. **Accessibility Service**: Tap the **Reels Blocker toggle**, which redirects you to Accessibility Settings.
-   - Look for **PureShield** under "Downloaded Apps" or "Installed Services".
-   - Turn it **ON**.
-   - ⚠️ **Android 13+ Users**: If it says "Restricted Setting", go back to your phone's Settings > Apps > PureShield. Tap the three dots (⋮) in the top right corner and tap **Allow Restricted Settings**. Then try enabling the Accessibility Service again.
-5. Setup your **PIN Code** and enable **Uninstall Protection** (Device Admin) via settings to solidify the barrier.
-
-## 🔒 Privacy Policy
-
-PureShield is designed to stay on-device and keep user data local.
-- The app does not request the `INTERNET` permission.
-- Accessibility processing stays on-device and is used only for the user-enabled blocking flow.
-- No analytics, telemetry, crash reporting, or cloud-sync SDKs are bundled.
-- Optional Device Admin, boot, notification, battery-optimization, and Private DNS features are all user-triggered system behaviors.
 
 ## 🤝 Contributing
 

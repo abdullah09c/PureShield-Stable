@@ -29,6 +29,7 @@ class BlockerSettingsActivity : AppCompatActivity() {
         binding.switchFblite.isChecked = Prefs.isFBLiteBlocked(this)
         binding.switchInstagram.isChecked = Prefs.isInstagramBlocked(this)
         binding.switchTiktok.isChecked = Prefs.isTikTokBlocked(this)
+        binding.switchBlockOnScroll.isChecked = Prefs.isBlockOnScroll(this)
         binding.etBlockMessage.setText(Prefs.getBlockMessage(this))
     }
 
@@ -39,6 +40,7 @@ class BlockerSettingsActivity : AppCompatActivity() {
             Prefs.setFBLiteBlocked(this, binding.switchFblite.isChecked)
             Prefs.setInstagramBlocked(this, binding.switchInstagram.isChecked)
             Prefs.setTikTokBlocked(this, binding.switchTiktok.isChecked)
+            Prefs.setBlockOnScroll(this, binding.switchBlockOnScroll.isChecked)
 
             val msg = binding.etBlockMessage.text.toString().trim()
             if (msg.isNotEmpty()) Prefs.setBlockMessage(this, msg)

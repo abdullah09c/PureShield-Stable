@@ -17,9 +17,14 @@ object Prefs {
     const val KEY_BLOCK_INSTAGRAM = "block_instagram"
     const val KEY_BLOCK_TIKTOK = "block_tiktok"
     const val KEY_BLOCK_MESSAGE = "block_message"
+    const val KEY_BLOCK_ON_SCROLL = "block_on_scroll"
     const val KEY_DNS_PRESET = "dns_preset"
     const val KEY_START_ON_BOOT = "start_on_boot"
+    const val KEY_BLOCKING_BEHAVIOR_CHOSEN = "blocking_behavior_chosen"
     const val KEY_ACCESSIBILITY_CONSENT_ACCEPTED = "accessibility_consent_accepted"
+    const val KEY_REVIEW_PROMPT_ACCUMULATED_MS = "review_prompt_accumulated_ms"
+    const val KEY_REVIEW_PROMPT_LAST_LATER_AT_MS = "review_prompt_last_later_at_ms"
+    const val KEY_REVIEW_PROMPT_COMPLETED = "review_prompt_completed"
 
     private fun prefs(ctx: Context): SharedPreferences =
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
@@ -48,17 +53,44 @@ object Prefs {
 
     fun setBlockMessage(ctx: Context, v: String) = prefs(ctx).edit().putString(KEY_BLOCK_MESSAGE, v).apply()
 
+    fun isBlockOnScroll(ctx: Context) = prefs(ctx).getBoolean(KEY_BLOCK_ON_SCROLL, true)
+    fun setBlockOnScroll(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_BLOCK_ON_SCROLL, v).apply()
+
     fun getDnsPreset(ctx: Context) = prefs(ctx).getString(KEY_DNS_PRESET, DnsPreset.NONE.name) ?: DnsPreset.NONE.name
     fun setDnsPreset(ctx: Context, v: String) = prefs(ctx).edit().putString(KEY_DNS_PRESET, v).apply()
 
     fun isStartOnBoot(ctx: Context) = prefs(ctx).getBoolean(KEY_START_ON_BOOT, true)
     fun setStartOnBoot(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_START_ON_BOOT, v).apply()
 
+    fun isBlockingBehaviorChosen(ctx: Context) =
+        prefs(ctx).getBoolean(KEY_BLOCKING_BEHAVIOR_CHOSEN, false)
+
+    fun setBlockingBehaviorChosen(ctx: Context, v: Boolean) =
+        prefs(ctx).edit().putBoolean(KEY_BLOCKING_BEHAVIOR_CHOSEN, v).apply()
+
     fun hasAccessibilityConsent(ctx: Context) =
         prefs(ctx).getBoolean(KEY_ACCESSIBILITY_CONSENT_ACCEPTED, false)
 
     fun setAccessibilityConsentAccepted(ctx: Context, v: Boolean) =
         prefs(ctx).edit().putBoolean(KEY_ACCESSIBILITY_CONSENT_ACCEPTED, v).apply()
+
+    fun getReviewPromptAccumulatedMs(ctx: Context) =
+        prefs(ctx).getLong(KEY_REVIEW_PROMPT_ACCUMULATED_MS, 0L)
+
+    fun setReviewPromptAccumulatedMs(ctx: Context, v: Long) =
+        prefs(ctx).edit().putLong(KEY_REVIEW_PROMPT_ACCUMULATED_MS, v).apply()
+
+    fun getReviewPromptLastLaterAtMs(ctx: Context) =
+        prefs(ctx).getLong(KEY_REVIEW_PROMPT_LAST_LATER_AT_MS, 0L)
+
+    fun setReviewPromptLastLaterAtMs(ctx: Context, v: Long) =
+        prefs(ctx).edit().putLong(KEY_REVIEW_PROMPT_LAST_LATER_AT_MS, v).apply()
+
+    fun isReviewPromptCompleted(ctx: Context) =
+        prefs(ctx).getBoolean(KEY_REVIEW_PROMPT_COMPLETED, false)
+
+    fun setReviewPromptCompleted(ctx: Context, v: Boolean) =
+        prefs(ctx).edit().putBoolean(KEY_REVIEW_PROMPT_COMPLETED, v).apply()
 }
 
 enum class DnsPreset(@StringRes val displayNameRes: Int, val address: String, val features: List<String>) {
@@ -90,18 +122,6 @@ enum class DnsPreset(@StringRes val displayNameRes: Int, val address: String, va
         "Blocks Adult Content",
         "Blocks Malware",
         "High Speed DNS"
-    )),
-
-    CLOUDFLARE_DEFAULT(R.string.dns_cloudflare_default, "one.one.one.one", listOf(
-        "Blocks Malware",
-        "High Speed DNS",
-        "Allows Adult Content"
-    )),
-
-    GOOGLE_SAFE(R.string.dns_google, "family-dns.google", listOf(
-        "Blocks Adult Content",
-        "High Speed DNS",
-        "Supports SafeSearch"
     )),
 
     CLOUDFLARE_SECURITY(R.string.dns_cloudflare_security, "security.cloudflare-dns.com", listOf(

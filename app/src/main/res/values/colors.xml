@@ -30,6 +30,7 @@
     <color name="active_green">#219653</color>
     <color name="inactive_gray">#A1B2A5</color>
     <color name="danger">#D32F2F</color>
+    <color name="danger_light">#FFF0F1</color>
 
     <!-- Overlay -->
     <color name="overlay_bg">#FFFFFF</color>

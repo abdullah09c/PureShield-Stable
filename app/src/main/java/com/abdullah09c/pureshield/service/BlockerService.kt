@@ -32,8 +32,6 @@ class BlockerService : AccessibilityService() {
         private const val TAG = "BlockerService"
 
         private const val BLOCK_ACTION_COOLDOWN_MS = 900L
-        private const val FBLITE_CONFIRM_DELAY_MS = 500L  // Wait before confirming Reels block
-        private const val FB_CONFIRM_DELAY_MS = 400L      // Wait before confirming FB Reels block
         private const val MAX_NODE_SCAN = 1800
         private const val TOAST_SHORT_FEED_BLOCKED = "Reels/Shorts Blocked"
         private const val TOAST_TIKTOK_BLOCKED = "TikTok Blocked"
@@ -51,14 +49,9 @@ class BlockerService : AccessibilityService() {
     private var lastBlockTime = 0L
     private val mainHandler = Handler(Looper.getMainLooper())
     private var isForegroundShown = false
-
-    // Pending confirmation runnable for FB Lite Reels detection.
-    // We delay the block and re-check to avoid false positives when fast-scrolling
-    // the news feed causes inline videos to briefly look like Reels.
-    private var fblitePendingBlockRunnable: Runnable? = null
-    // Pending confirmation runnable for FB (main app) Reels detection.
-    private var fbPendingBlockRunnable: Runnable? = null
-
+    private var fbReelsEnterTime = 0L
+    private var fbLiteReelsEnterTime = 0L
+    private var ytShortsEnterTime = 0L
     // ─── Lifecycle ──────────────────────────────────────────────────────────
 
     override fun onServiceConnected() {
@@ -125,14 +118,10 @@ class BlockerService : AccessibilityService() {
         val pkg = event.packageName?.toString() ?: return
         if (pkg == packageName || pkg == "com.android.systemui") return
 
-        // Cancel pending delayed blocks if the user navigated away
-        if (pkg != BlockTargets.PKG_FBLITE) {
-            cancelPendingFBLiteBlock()
-        }
-        if (pkg != BlockTargets.PKG_FACEBOOK) {
-            cancelPendingFBBlock()
-        }
-
+        // Reset timers if the user navigated away
+        if (pkg != BlockTargets.PKG_FACEBOOK) fbReelsEnterTime = 0L
+        if (pkg != BlockTargets.PKG_FBLITE) fbLiteReelsEnterTime = 0L
+        if (pkg != BlockTargets.PKG_YOUTUBE && pkg != BlockTargets.PKG_YOUTUBE_REVANCED) ytShortsEnterTime = 0L
         // Only process events from our target apps
         if (pkg !in BlockTargets.ALL_PACKAGES) return
 
@@ -161,85 +150,126 @@ class BlockerService : AccessibilityService() {
             return
         }
 
-        // FB Lite gets special treatment: schedule a delayed confirmation check
-        // to avoid false positives when fast-scrolling the news feed causes inline
-        // videos to momentarily look like Reels.
+        val blockOnScroll = Prefs.isBlockOnScroll(this)
+
+        // FB Lite gets special treatment: block when Reels is confirmed 
         if (pkg == BlockTargets.PKG_FBLITE && Prefs.isFBLiteBlocked(this)) {
             if (isFBLiteReels()) {
-                scheduleFBLiteBlockIfNotPending()
+                if (!blockOnScroll) {
+                    lastBlockedPkg = pkg
+                    lastBlockTime = now
+                    fbLiteReelsEnterTime = 0L
+                    blockWithGlobalAction()
+                    return
+                }
+
+                if (fbLiteReelsEnterTime == 0L) {
+                    fbLiteReelsEnterTime = now
+                }
+                
+                // For FB Lite, we only kick out on a genuine user scroll AFTER grace period
+                if (isGenuineUserScroll(event) && (now - fbLiteReelsEnterTime > 2000L)) {
+                    lastBlockedPkg = pkg
+                    lastBlockTime = now
+                    fbLiteReelsEnterTime = 0L
+                    blockWithGlobalAction()
+                }
             } else {
-                cancelPendingFBLiteBlock()
+                fbLiteReelsEnterTime = 0L
             }
             return
         }
 
-        // FB main app: use delayed-confirm pattern to avoid false positives
+        // FB main app
         if (pkg == BlockTargets.PKG_FACEBOOK && Prefs.isFacebookBlocked(this)) {
             if (isFacebookReels()) {
-                scheduleFBBlockIfNotPending()
+                if (!blockOnScroll) {
+                    lastBlockedPkg = pkg
+                    lastBlockTime = now
+                    fbReelsEnterTime = 0L
+                    blockWithGlobalAction()
+                    return
+                }
+
+                if (fbReelsEnterTime == 0L) {
+                    fbReelsEnterTime = now
+                }
+                
+                // Ignore automatic layout scrolls when Reels first opens (2-second grace period)
+                // AND ensure the scroll event is a genuine user swipe, not a video progress bar update
+                if (isGenuineUserScroll(event) && (now - fbReelsEnterTime > 2000L)) {
+                    lastBlockedPkg = pkg
+                    lastBlockTime = now
+                    fbReelsEnterTime = 0L // reset for next time
+                    blockWithGlobalAction()
+                }
             } else {
-                cancelPendingFBBlock()
+                // Reset timer when we exit Reels so re-entry works correctly
+                fbReelsEnterTime = 0L
             }
             return
         }
 
-        val shouldBlock = when (pkg) {
-            BlockTargets.PKG_YOUTUBE,
-            BlockTargets.PKG_YOUTUBE_REVANCED -> {
-                Prefs.isYouTubeBlocked(this) && isYouTubeShorts(event)
+        // YouTube and YouTube ReVanced (Shorts Block)
+        val isYouTube = pkg == BlockTargets.PKG_YOUTUBE || pkg == BlockTargets.PKG_YOUTUBE_REVANCED
+        if (isYouTube && Prefs.isYouTubeBlocked(this)) {
+            if (isYouTubeShorts(event)) {
+                if (!blockOnScroll) {
+                    lastBlockedPkg = pkg
+                    lastBlockTime = now
+                    ytShortsEnterTime = 0L
+                    blockWithGlobalAction()
+                    return
+                }
+
+                if (ytShortsEnterTime == 0L) {
+                    ytShortsEnterTime = now
+                }
+
+                if (isGenuineUserScroll(event) && (now - ytShortsEnterTime > 2000L)) {
+                    lastBlockedPkg = pkg
+                    lastBlockTime = now
+                    ytShortsEnterTime = 0L
+                    blockWithGlobalAction()
+                }
+            } else {
+                ytShortsEnterTime = 0L
             }
-            else -> false
+            return
         }
-
-        if (shouldBlock) {
-            lastBlockedPkg = pkg
-            lastBlockTime = now
-            blockWithGlobalAction()
-        }
-    }
-
-    private fun scheduleFBLiteBlockIfNotPending() {
-        if (fblitePendingBlockRunnable != null) return  // already scheduled
-        val runnable = Runnable {
-            fblitePendingBlockRunnable = null
-            // Re-confirm: still looks like Reels after the delay?
-            val root = rootInActiveWindow ?: return@Runnable
-            if (hasFBLiteFullScreenVideoInRecycler(root)) {
-                lastBlockedPkg = BlockTargets.PKG_FBLITE
-                lastBlockTime = System.currentTimeMillis()
-                blockWithGlobalAction()
-            }
-        }
-        fblitePendingBlockRunnable = runnable
-        mainHandler.postDelayed(runnable, FBLITE_CONFIRM_DELAY_MS)
-    }
-
-    private fun cancelPendingFBLiteBlock() {
-        fblitePendingBlockRunnable?.let { mainHandler.removeCallbacks(it) }
-        fblitePendingBlockRunnable = null
-    }
-
-    private fun scheduleFBBlockIfNotPending() {
-        if (fbPendingBlockRunnable != null) return  // already scheduled
-        val runnable = Runnable {
-            fbPendingBlockRunnable = null
-            // Re-confirm: still looks like Reels after the delay?
-            if (isFacebookReels()) {
-                lastBlockedPkg = BlockTargets.PKG_FACEBOOK
-                lastBlockTime = System.currentTimeMillis()
-                blockWithGlobalAction()
-            }
-        }
-        fbPendingBlockRunnable = runnable
-        mainHandler.postDelayed(runnable, FB_CONFIRM_DELAY_MS)
-    }
-
-    private fun cancelPendingFBBlock() {
-        fbPendingBlockRunnable?.let { mainHandler.removeCallbacks(it) }
-        fbPendingBlockRunnable = null
     }
 
     // ─── Detection Logic ────────────────────────────────────────────────────
+
+    private fun isGenuineUserScroll(event: AccessibilityEvent): Boolean {
+        if (event.eventType != AccessibilityEvent.TYPE_VIEW_SCROLLED) return false
+
+        val className = event.className?.toString() ?: ""
+        
+        // If it's a known scrollable container, it's very likely a genuine user swipe.
+        if (className.contains("RecyclerView") || className.contains("ViewPager") || className.contains("ListView") || className.contains("ScrollView")) {
+            return true
+        }
+
+        // Filter out obvious fake scrolls from progress bars
+        if (className.contains("SeekBar") || className.contains("ProgressBar")) {
+            return false
+        }
+
+        // Fallback: Check for physical scroll delta on modern Android versions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Math.abs(event.scrollDeltaY) > 5 || Math.abs(event.scrollDeltaX) > 5) {
+                return true
+            }
+        }
+
+        // If the scroll event reports more than 0 items (typical for lists), consider it genuine
+        if (event.itemCount > 0) {
+            return true
+        }
+
+        return false
+    }
 
     private fun isYouTubeShorts(event: AccessibilityEvent): Boolean {
         val className = event.className?.toString() ?: ""
@@ -389,9 +419,20 @@ class BlockerService : AccessibilityService() {
     }
 
     private fun containsAnyFullViewId(root: AccessibilityNodeInfo, fullViewIds: Set<String>): Boolean {
-        for (id in fullViewIds) {
-            val matches = root.findAccessibilityNodeInfosByViewId(id)
-            if (!matches.isNullOrEmpty()) return true
+        val queue = ArrayDeque<AccessibilityNodeInfo>()
+        queue.add(root)
+        var inspected = 0
+        val maxNodes = 2500
+
+        while (queue.isNotEmpty() && inspected < maxNodes) {
+            val node = queue.removeFirst()
+            val viewId = node.viewIdResourceName
+            if (viewId != null && viewId in fullViewIds) return true
+
+            for (i in 0 until node.childCount) {
+                node.getChild(i)?.let { queue.add(it) }
+            }
+            inspected++
         }
         return false
     }
@@ -418,6 +459,7 @@ class BlockerService : AccessibilityService() {
     }
 
     private fun showBlockOverlay() {
+
         val overlayIntent = Intent(this, OverlayActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
