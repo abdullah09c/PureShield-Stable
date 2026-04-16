@@ -42,9 +42,9 @@
 
 ## 📸 Screenshots
 
-| Home | Blocking Setup | Active Overlay |
+| Home | Customize Settings | Active Overlay |
 | :---: | :---: | :---: |
-| <img src="screenshots/home.png" width="220" alt="Home Screen"/> | <img src="screenshots/customize.jpg" width="220" alt="Customize Screen"/> | <img src="screenshots/overlay.png" width="220" alt="Block Overlay"/> |
+| <img src="screenshots/home.png" width="220" alt="Home Screen"/> | <img src="screenshots/customize.jpg" width="220" alt="Customize Settings"/> | <img src="screenshots/overlay.png" width="220" alt="Block Overlay"/> |
 
 
 ## 🤝 Contributing
