@@ -38,6 +38,6 @@ crash.log
 # Custom app outputs
 app/dump_formatted.xml
 app/window_dump.xml
-*.txt
+*.md.txt
 format_xml.py
 release/
