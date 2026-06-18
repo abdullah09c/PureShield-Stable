@@ -17,7 +17,7 @@ object Prefs {
     const val KEY_BLOCK_INSTAGRAM = "block_instagram"
     const val KEY_BLOCK_TIKTOK = "block_tiktok"
     const val KEY_BLOCK_MESSAGE = "block_message"
-    const val KEY_BLOCK_ON_SCROLL = "block_on_scroll"
+    const val KEY_INSTANT_BLOCK = "instant_block"
     const val KEY_DNS_PRESET = "dns_preset"
     const val KEY_START_ON_BOOT = "start_on_boot"
     const val KEY_BLOCKING_BEHAVIOR_CHOSEN = "blocking_behavior_chosen"
@@ -53,8 +53,8 @@ object Prefs {
 
     fun setBlockMessage(ctx: Context, v: String) = prefs(ctx).edit().putString(KEY_BLOCK_MESSAGE, v).apply()
 
-    fun isBlockOnScroll(ctx: Context) = prefs(ctx).getBoolean(KEY_BLOCK_ON_SCROLL, true)
-    fun setBlockOnScroll(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_BLOCK_ON_SCROLL, v).apply()
+    fun isInstantBlock(ctx: Context) = prefs(ctx).getBoolean(KEY_INSTANT_BLOCK, true)
+    fun setInstantBlock(ctx: Context, v: Boolean) = prefs(ctx).edit().putBoolean(KEY_INSTANT_BLOCK, v).apply()
 
     fun getDnsPreset(ctx: Context) = prefs(ctx).getString(KEY_DNS_PRESET, DnsPreset.NONE.name) ?: DnsPreset.NONE.name
     fun setDnsPreset(ctx: Context, v: String) = prefs(ctx).edit().putString(KEY_DNS_PRESET, v).apply()
@@ -93,7 +93,7 @@ object Prefs {
         prefs(ctx).edit().putBoolean(KEY_REVIEW_PROMPT_COMPLETED, v).apply()
 }
 
-enum class DnsPreset(@StringRes val displayNameRes: Int, val address: String, val features: List<String>) {
+enum class DnsPreset(@param:StringRes val displayNameRes: Int, val address: String, val features: List<String>) {
     NONE(R.string.dns_none, "", listOf()),
     
     CLEANBROWSING_FAMILY(R.string.dns_cleanbrowsing_family, "family-filter-dns.cleanbrowsing.org", listOf(

@@ -32,7 +32,7 @@ class BlockerService : AccessibilityService() {
         private const val TAG = "BlockerService"
 
         private const val BLOCK_ACTION_COOLDOWN_MS = 900L
-        private const val MAX_NODE_SCAN = 1800
+        private const val MAX_NODE_SCAN = 400
         private const val TOAST_SHORT_FEED_BLOCKED = "Reels/Shorts Blocked"
         private const val TOAST_TIKTOK_BLOCKED = "TikTok Blocked"
 
@@ -52,6 +52,16 @@ class BlockerService : AccessibilityService() {
     private var fbReelsEnterTime = 0L
     private var fbLiteReelsEnterTime = 0L
     private var ytShortsEnterTime = 0L
+
+    // Screen state detection caching
+    private var lastFBReelsCheckTime = 0L
+    private var lastFBReelsResult = false
+
+    private var lastFBLiteReelsCheckTime = 0L
+    private var lastFBLiteReelsResult = false
+
+    private var lastYTShortsCheckTime = 0L
+    private var lastYTShortsResult = false
     // ─── Lifecycle ──────────────────────────────────────────────────────────
 
     override fun onServiceConnected() {
@@ -103,7 +113,8 @@ class BlockerService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
 
-        if ((event.eventType and TARGET_EVENT_MASK) == 0) return
+        val eventType = event.eventType
+        if ((eventType and TARGET_EVENT_MASK) == 0) return
 
         // Only act when blocker is enabled
         if (!Prefs.isBlockerEnabled(this) || !Prefs.hasAccessibilityConsent(this)) {
@@ -150,12 +161,12 @@ class BlockerService : AccessibilityService() {
             return
         }
 
-        val blockOnScroll = Prefs.isBlockOnScroll(this)
+        val instantBlock = Prefs.isInstantBlock(this)
 
         // FB Lite gets special treatment: block when Reels is confirmed 
         if (pkg == BlockTargets.PKG_FBLITE && Prefs.isFBLiteBlocked(this)) {
-            if (isFBLiteReels()) {
-                if (!blockOnScroll) {
+            if (checkIsFBLiteReelsCached(eventType, now)) {
+                if (instantBlock) {
                     lastBlockedPkg = pkg
                     lastBlockTime = now
                     fbLiteReelsEnterTime = 0L
@@ -167,8 +178,8 @@ class BlockerService : AccessibilityService() {
                     fbLiteReelsEnterTime = now
                 }
                 
-                // For FB Lite, we only kick out on a genuine user scroll AFTER grace period
-                if (isGenuineUserScroll(event) && (now - fbLiteReelsEnterTime > 2000L)) {
+                // For FB Lite, we block immediately on genuine scroll after 800ms stabilization window
+                if (isGenuineUserScroll(event) && (now - fbLiteReelsEnterTime > 800L)) {
                     lastBlockedPkg = pkg
                     lastBlockTime = now
                     fbLiteReelsEnterTime = 0L
@@ -182,8 +193,8 @@ class BlockerService : AccessibilityService() {
 
         // FB main app
         if (pkg == BlockTargets.PKG_FACEBOOK && Prefs.isFacebookBlocked(this)) {
-            if (isFacebookReels()) {
-                if (!blockOnScroll) {
+            if (checkIsFacebookReelsCached(eventType, now)) {
+                if (instantBlock) {
                     lastBlockedPkg = pkg
                     lastBlockTime = now
                     fbReelsEnterTime = 0L
@@ -195,9 +206,9 @@ class BlockerService : AccessibilityService() {
                     fbReelsEnterTime = now
                 }
                 
-                // Ignore automatic layout scrolls when Reels first opens (2-second grace period)
+                // Ignore automatic layout scrolls when Reels first opens (800ms stabilization window)
                 // AND ensure the scroll event is a genuine user swipe, not a video progress bar update
-                if (isGenuineUserScroll(event) && (now - fbReelsEnterTime > 2000L)) {
+                if (isGenuineUserScroll(event) && (now - fbReelsEnterTime > 800L)) {
                     lastBlockedPkg = pkg
                     lastBlockTime = now
                     fbReelsEnterTime = 0L // reset for next time
@@ -213,8 +224,8 @@ class BlockerService : AccessibilityService() {
         // YouTube and YouTube ReVanced (Shorts Block)
         val isYouTube = pkg == BlockTargets.PKG_YOUTUBE || pkg == BlockTargets.PKG_YOUTUBE_REVANCED
         if (isYouTube && Prefs.isYouTubeBlocked(this)) {
-            if (isYouTubeShorts(event)) {
-                if (!blockOnScroll) {
+            if (checkIsYouTubeShortsCached(event, now)) {
+                if (instantBlock) {
                     lastBlockedPkg = pkg
                     lastBlockTime = now
                     ytShortsEnterTime = 0L
@@ -226,7 +237,7 @@ class BlockerService : AccessibilityService() {
                     ytShortsEnterTime = now
                 }
 
-                if (isGenuineUserScroll(event) && (now - ytShortsEnterTime > 2000L)) {
+                if (isGenuineUserScroll(event) && (now - ytShortsEnterTime > 800L)) {
                     lastBlockedPkg = pkg
                     lastBlockTime = now
                     ytShortsEnterTime = 0L
@@ -239,6 +250,37 @@ class BlockerService : AccessibilityService() {
         }
     }
 
+    private fun checkIsFacebookReelsCached(eventType: Int, now: Long): Boolean {
+        val needsFreshCheck = eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
+                eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED ||
+                (now - lastFBReelsCheckTime > 1000L)
+        if (!needsFreshCheck) return lastFBReelsResult
+        lastFBReelsCheckTime = now
+        lastFBReelsResult = isFacebookReels()
+        return lastFBReelsResult
+    }
+
+    private fun checkIsFBLiteReelsCached(eventType: Int, now: Long): Boolean {
+        val needsFreshCheck = eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
+                eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED ||
+                (now - lastFBLiteReelsCheckTime > 1000L)
+        if (!needsFreshCheck) return lastFBLiteReelsResult
+        lastFBLiteReelsCheckTime = now
+        lastFBLiteReelsResult = isFBLiteReels()
+        return lastFBLiteReelsResult
+    }
+
+    private fun checkIsYouTubeShortsCached(event: AccessibilityEvent, now: Long): Boolean {
+        val eventType = event.eventType
+        val needsFreshCheck = eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED ||
+                eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED ||
+                (now - lastYTShortsCheckTime > 1000L)
+        if (!needsFreshCheck) return lastYTShortsResult
+        lastYTShortsCheckTime = now
+        lastYTShortsResult = isYouTubeShorts(event)
+        return lastYTShortsResult
+    }
+
     // ─── Detection Logic ────────────────────────────────────────────────────
 
     private fun isGenuineUserScroll(event: AccessibilityEvent): Boolean {
@@ -246,9 +288,9 @@ class BlockerService : AccessibilityService() {
 
         val className = event.className?.toString() ?: ""
         
-        // If it's a known scrollable container, it's very likely a genuine user swipe.
-        if (className.contains("RecyclerView") || className.contains("ViewPager") || className.contains("ListView") || className.contains("ScrollView")) {
-            return true
+        // Filter out obvious horizontal tab ViewPagers (Reels/Shorts scroll vertically via ViewPager2 or RecyclerView)
+        if (className.contains("ViewPager") && !className.contains("ViewPager2")) {
+            return false
         }
 
         // Filter out obvious fake scrolls from progress bars
@@ -256,11 +298,22 @@ class BlockerService : AccessibilityService() {
             return false
         }
 
-        // Fallback: Check for physical scroll delta on modern Android versions
+        // Check for vertical scroll deltas on Android P and above
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            if (Math.abs(event.scrollDeltaY) > 5 || Math.abs(event.scrollDeltaX) > 5) {
+            val dx = Math.abs(event.scrollDeltaX)
+            val dy = Math.abs(event.scrollDeltaY)
+            // If horizontal scroll is dominant, it is NOT a reels swipe (reels are vertical)
+            if (dx > dy) {
+                return false
+            }
+            if (dy > 5) {
                 return true
             }
+        }
+
+        // If it's a known vertical/scrollable container, it's very likely a genuine user swipe.
+        if (className.contains("RecyclerView") || className.contains("ViewPager2") || className.contains("ListView") || className.contains("ScrollView")) {
+            return true
         }
 
         // If the scroll event reports more than 0 items (typical for lists), consider it genuine
@@ -312,6 +365,10 @@ class BlockerService : AccessibilityService() {
 
         while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
             val node = queue.removeFirst()
+            
+            // Only inspect nodes visible to the user (filters out offscreen cached tab fragments)
+            if (!node.isVisibleToUser) continue
+
             val desc = node.contentDescription?.toString() ?: ""
             val descLower = desc.lowercase()
 
@@ -344,8 +401,9 @@ class BlockerService : AccessibilityService() {
             inspected++
         }
 
-        // At least 1 strong supporting signal (e.g. Reels profile button alone)
-        return reelsSignalCount >= 1
+        // Require at least 2 supporting signals (e.g., reels profile profile icon + reels controls)
+        // to avoid single "create reel" button false positives on standard news feeds.
+        return reelsSignalCount >= 2
     }
 
     private fun isFBLiteReels(): Boolean {
@@ -374,6 +432,10 @@ class BlockerService : AccessibilityService() {
 
         while (queue.isNotEmpty() && inspected < MAX_NODE_SCAN) {
             val node = queue.removeFirst()
+            
+            // Only inspect nodes visible to the user to avoid picking up cached background pages
+            if (!node.isVisibleToUser) continue
+
             val cls = node.className?.toString() ?: ""
             val viewId = node.viewIdResourceName ?: ""
 
@@ -402,7 +464,7 @@ class BlockerService : AccessibilityService() {
         val queue = ArrayDeque<AccessibilityNodeInfo>()
         queue.add(root)
         var inspected = 0
-        val maxNodes = 2500
+        val maxNodes = 400
         while (queue.isNotEmpty() && inspected < maxNodes) {
             val node = queue.removeFirst()
             val viewId = node.viewIdResourceName
@@ -422,7 +484,7 @@ class BlockerService : AccessibilityService() {
         val queue = ArrayDeque<AccessibilityNodeInfo>()
         queue.add(root)
         var inspected = 0
-        val maxNodes = 2500
+        val maxNodes = 400
 
         while (queue.isNotEmpty() && inspected < maxNodes) {
             val node = queue.removeFirst()

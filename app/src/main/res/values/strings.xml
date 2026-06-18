@@ -36,10 +36,10 @@
     <string name="label_block_message">Custom Block Message</string>
     <string name="hint_block_message">Enter your motivational reminder…</string>
     <string name="default_block_message">وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا\nSurah Ar-Talaq (65:2)\n\nStay Focused. Guard Your Time.</string>
-    <string name="label_block_on_scroll">Wait for Scroll Before Blocking</string>
-    <string name="desc_block_on_scroll">Allows you to watch the first Reel or Short, but blocks you instantly when you try to scroll or swipe to the next video.</string>
+    <string name="label_instant_block">Instant Block</string>
+    <string name="desc_instant_block">Blocks all Reels and Shorts immediately upon entry. Maximum protection against distractions.</string>
     <string name="accessibility_required">Accessibility permission is required</string>
-    <string name="enable_accessibility">Enable in Accessibility Settings</string>
+    <string name="enable_accessibility">Open Settings</string>
 
     <!-- Behavioral Setup -->
     <string name="blocking_behavior_title">Setup Blocking Behavior</string>
@@ -74,7 +74,7 @@
     <string name="continue_label">Continue</string>
 
     <!-- About -->
-    <string name="about_version">Version 1.3.1</string>
+    <string name="about_version">Version 1.3.2</string>
     <string name="about_developer">NaniteX</string>
     <string name="about_nanitex_url">https://nanitex.com</string>
     <string name="privacy_policy_url">https://github.com/abdullah09c/PureShield-Stable/blob/main/PRIVACY_POLICY.md</string>

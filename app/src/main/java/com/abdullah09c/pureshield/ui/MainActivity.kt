@@ -448,7 +448,7 @@ class MainActivity : AppCompatActivity() {
 
         val scrollCard = cardScroll as MaterialCardView
         val instantCard = cardInstant as MaterialCardView
-        var selectedBlockOnScroll = true
+        var instantBlock = false
 
         val updateSelectionUi = {
             val selectedBg = ContextCompat.getColor(this, R.color.surface_variant)
@@ -458,19 +458,7 @@ class MainActivity : AppCompatActivity() {
             val selectedText = ContextCompat.getColor(this, R.color.green_dark)
             val normalText = ContextCompat.getColor(this, R.color.text_hint)
 
-            if (selectedBlockOnScroll) {
-                scrollCard.setCardBackgroundColor(selectedBg)
-                scrollCard.strokeColor = selectedStroke
-                scrollCard.strokeWidth = (2 * resources.displayMetrics.density).toInt()
-                tvScrollSelect.text = getString(R.string.selected)
-                tvScrollSelect.setTextColor(selectedText)
-
-                instantCard.setCardBackgroundColor(normalBg)
-                instantCard.strokeColor = normalStroke
-                instantCard.strokeWidth = resources.displayMetrics.density.toInt()
-                tvInstantSelect.text = getString(R.string.not_selected)
-                tvInstantSelect.setTextColor(normalText)
-            } else {
+            if (instantBlock) {
                 instantCard.setCardBackgroundColor(selectedBg)
                 instantCard.strokeColor = selectedStroke
                 instantCard.strokeWidth = (2 * resources.displayMetrics.density).toInt()
@@ -482,23 +470,35 @@ class MainActivity : AppCompatActivity() {
                 scrollCard.strokeWidth = resources.displayMetrics.density.toInt()
                 tvScrollSelect.text = getString(R.string.not_selected)
                 tvScrollSelect.setTextColor(normalText)
+            } else {
+                scrollCard.setCardBackgroundColor(selectedBg)
+                scrollCard.strokeColor = selectedStroke
+                scrollCard.strokeWidth = (2 * resources.displayMetrics.density).toInt()
+                tvScrollSelect.text = getString(R.string.selected)
+                tvScrollSelect.setTextColor(selectedText)
+
+                instantCard.setCardBackgroundColor(normalBg)
+                instantCard.strokeColor = normalStroke
+                instantCard.strokeWidth = resources.displayMetrics.density.toInt()
+                tvInstantSelect.text = getString(R.string.not_selected)
+                tvInstantSelect.setTextColor(normalText)
             }
         }
 
         updateSelectionUi()
 
         cardScroll.setOnClickListener {
-            selectedBlockOnScroll = true
+            instantBlock = false
             updateSelectionUi()
         }
 
         cardInstant.setOnClickListener {
-            selectedBlockOnScroll = false
+            instantBlock = true
             updateSelectionUi()
         }
 
         btnContinue.setOnClickListener {
-            Prefs.setBlockOnScroll(this, selectedBlockOnScroll)
+            Prefs.setInstantBlock(this, instantBlock)
             Prefs.setBlockingBehaviorChosen(this, true)
             dialog.dismiss()
             Toast.makeText(this, getString(R.string.blocking_behavior_saved), Toast.LENGTH_SHORT).show()
